@@ -73,3 +73,9 @@ obj/
 
 # Processed files
 *.vsidx
+
+data/
+*.wt
+mongod.lock
+storage.bson
+WiredTiger*

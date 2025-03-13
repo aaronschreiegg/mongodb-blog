@@ -6,7 +6,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: weLoveMongo
     ports:
-      - "5000:5000"
+      - "27017:27017"
     volumes:
       - ./data:/data/db
     networks:
@@ -15,7 +15,7 @@ services:
   frontend:
     container_name: nginx_container
     build: ./frontend
-    image:
+    image: nginx_image
     ports:
       - "4200:80"
     networks:
