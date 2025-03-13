@@ -40,3 +40,10 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+data/
+*.wt
+mongod.lock
+storage.bson
+WiredTiger*
+
