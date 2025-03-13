@@ -13,7 +13,7 @@ services:
       - internalnet
   
   frontend:
-    container_name: nginx_container
+    container_name: nginx_container_blog
     build: ./frontend
     image: nginx_image
     ports:
