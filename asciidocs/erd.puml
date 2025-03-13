@@ -1,0 +1,44 @@
+@startuml
+entity BlogUser {
+    + id : ObjectId <<PK>>
+    --
+    + username : String
+    + firstname : String
+    + lastname : String
+    + password : String
+    + email : String
+}
+
+entity BlogEntry {
+    + id : ObjectId <<PK>>
+    --
+    + title : String
+    + author_id(s) : ObjectId[] <<FK>>
+    + description : String
+    + creationDate : Date
+    + editDates : Date[]
+    + impressionCount : Long
+    + commentsAllowed : Boolean
+    + content_text : String
+    + content_images : Base64[]
+}
+
+entity BlogCategory {
+    + id : ObjectId <<PK>>
+    --
+    + name : String
+}
+
+entity Comment {
+    + id : ObjectId <<PK>>
+    --
+    + blog_entry_id : ObjectId <<FK>>
+    + user_id : ObjectId <<FK>>
+    + content_text : String
+}
+
+BlogUser ||--o{ BlogEntry : "writes"
+BlogEntry ||--o{ Comment : "has"
+BlogUser ||--o{ Comment : "writes"
+BlogEntry }o--|| BlogCategory : "belongs to"
+@enduml
