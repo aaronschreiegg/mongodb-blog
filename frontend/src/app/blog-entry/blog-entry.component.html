@@ -1,0 +1,88 @@
+<div class="Blog-Entry-Container">
+    <h2>Blog upload</h2>
+    <form (submit)="uploadBlog()" #uploadForm="ngForm">
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" 
+                class="form-control" 
+                id="title" name="title" 
+                [(ngModel)]="blog.title" 
+                #titleInput="ngModel"
+                required>
+            <span class="error-message" 
+                  *ngIf="titleInput.invalid && (titleInput.dirty || titleInput.touched)">
+                Bitte geben Sie einen Titel ein
+            </span>
+        </div>
+        <div class="form-group">
+            <label for="description">Beschreibung:</label>
+            <textarea id="description" 
+                      [(ngModel)]="description" 
+                      name="description" 
+                      #descInput="ngModel"
+                      [class.invalid]="descInput.invalid && (descInput.dirty || descInput.touched)"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="mediaType">Medientyp:</label>
+            <select id="mediaType" 
+                    [(ngModel)]="mediaType" 
+                    name="mediaType" 
+                    required
+                    #typeInput="ngModel"
+                    [class.invalid]="typeInput.invalid && (typeInput.dirty || typeInput.touched)">
+              <option [ngValue]="MediaType.PDF">PDF</option>
+              <option [ngValue]="MediaType.Image">Bild</option>
+              <option [ngValue]="MediaType.Video">Video</option>
+            </select>
+            <span class="error-message" *ngIf="typeInput.invalid && (typeInput.dirty || typeInput.touched)">
+              Bitte wählen Sie einen Medientyp
+            </span>
+          </div>
+
+          <ng-container [ngSwitch]="mediaType">
+            <ng-container *ngSwitchCase="MediaType.PDF">
+              <div class="form-group">
+                <label for="contentPDF">PDF-Dokument:</label>
+                <input id="contentPDF" 
+                       type="file" 
+                       (change)="onContentFileChange($event)" 
+                       [class.invalid]="!contentFile && contentTouched"
+                       accept="application/pdf" />
+                <span class="error-message" *ngIf="!contentFile && contentTouched">
+                  Bitte wählen Sie ein PDF-Dokument aus
+                </span>
+              </div>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="MediaType.Image">
+                <div class="form-group">
+                  <label for="contentImage">Bild:</label>
+                  <input id="contentImage" 
+                         type="file" 
+                         (change)="onContentFileChange($event)" 
+                         [class.invalid]="!contentFile && contentTouched"
+                         accept="image/*" />
+                  <span class="error-message" *ngIf="!contentFile && contentTouched">
+                    Bitte wählen Sie ein Hauptbild aus
+                  </span>
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="MediaType.Video">
+                <div class="form-group">
+                  <label for="contentVideo">Video:</label>
+                  <input id="contentVideo" 
+                         type="file" 
+                         (change)="onContentFileChange($event)" 
+                         [class.invalid]="!contentFile && contentTouched"
+                         accept="video/mp4,video/x-m4v,video/*" />
+                  <span class="error-message" *ngIf="!contentFile && contentTouched">
+                    Bitte wählen Sie ein Video aus
+                  </span>
+                </div>
+              </ng-container>
+          </ng-container>
+
+          <button type="submit" [disabled]="!uploadForm.form.valid || !thumbnailFile || (!contentFile && mediaType !== MediaType.PDF)">Hochladen</button>
+    </form>
+</div>
