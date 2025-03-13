@@ -41,9 +41,3 @@ testem.log
 .DS_Store
 Thumbs.db
 
-data/
-*.wt
-mongod.lock
-storage.bson
-WiredTiger*
-
