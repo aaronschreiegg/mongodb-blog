@@ -1,7 +1,7 @@
 services:
   mongodb:
     image: mongo
-    container_name: mongodb
+    container_name: BlogMongoDb
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: weLoveMongo
