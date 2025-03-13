@@ -1,0 +1,40 @@
+= Blog - Konzept
+
+Pattern: Subset Pattern
+
+== Entities:
+
+=== BlogUser:
+    - id
+    - username
+    - firstname
+    - lastname
+    - password
+    - email
+
+=== BlogEntry:
+    - id
+    - title
+    - author_id(s)
+    - description
+    - creationDates
+    - editDates[]
+    - impressionCount
+    - commentsAllowed
+    - content_text
+    - content_images[] (base-64 encoded)
+
+=== BlogCategory:
+    - id
+    - name
+
+=== Comment:
+    - id
+    - blog_entry_id
+    - user_id
+    - content_text
+
+
+
+
+
