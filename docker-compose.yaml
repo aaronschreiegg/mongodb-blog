@@ -1,0 +1,29 @@
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: weLoveMongo
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/data/db
+    networks:
+      - internalnet
+  
+  frontend:
+    container_name: nginx_container
+    build: ./frontend
+    image:
+    ports:
+      - "4200:80"
+    networks:
+      - internalnet
+
+volumes:
+  data:
+
+networks:
+  internalnet:
+    driver: bridge
