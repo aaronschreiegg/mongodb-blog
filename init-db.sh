@@ -9,6 +9,9 @@ MONGO_USER="admin"
 MONGO_PASSWORD="weLoveMongo"
 MONGO_AUTH_DB="admin"
 
+
+
+
 # Wartezeit zwischen den Versuchen (Sekunden)
 RETRY_DELAY=5
 
@@ -34,14 +37,14 @@ while true; do
   sleep 1
 done
 
-
-
-
-
 echo "Datenbank 'Blog' existiert"
 
 
+# Testdaten importieren
+echo "📂 Importiere Testdaten..."
+docker exec -i "$CONTAINER_NAME" mongosh -u "$MONGO_USER" -p "$MONGO_PASSWORD" < ./init/import_data.js
 
+echo "✅ Testdaten erfolgreich eingefügt!"
 
 
 
