@@ -1,16 +1,14 @@
-// Verbindung zur Blog-Datenbank
 const fs = require("fs");
+const path = require("path");
 
-const imagePath = "/data/pics/image.jpg";
-const imageBase64 = fs.readFileSync(imagePath, { encoding: "base64" });
-console.log(imageBase64);
+const imageDir = "/data/pics";
+const imageFiles = fs.readdirSync(imageDir);
+const imagesBase64 = imageFiles.map(file =>
+    fs.readFileSync(path.join(imageDir, file), { encoding: "base64" })
+);
+
 db = db.getSiblingDB("Blog");
 
-
-
-
-
-// 1. Nutzer hinzufügen
 const users = [
     { username: "leopold", firstname: "Leopold", lastname: "Mistelberger", password: "passme", email: "leopold@example.com" },
     { username: "aaron", firstname: "Aaron", lastname: "Schreiegg", password: "pass123", email: "aaron@example.com" },
@@ -21,10 +19,8 @@ const users = [
 
 db.BlogUser.insertMany(users);
 
-// Nutzer-IDs abrufen
 const userIds = db.BlogUser.find().map(user => user._id);
 
-// 2. Kategorien hinzufügen
 const categories = [
     { name: "Technology" },
     { name: "Travel" },
@@ -32,54 +28,50 @@ const categories = [
 ];
 db.BlogCategory.insertMany(categories);
 
-// Kategorie-IDs abrufen
 const categoryIds = db.BlogCategory.find().map(cat => cat._id);
 
-// 3. Blog-Einträge hinzufügen
 const blogEntries = [
     {
         title: "MongoDB Basics",
-        author_ids: [userIds[0], userIds[3]], // Admin & TechGuy als Autoren
+        author_ids: [userIds[0], userIds[3]],
         description: "An introduction to MongoDB.",
         creationDate: new Date(),
         editDates: [],
         impressionCount: 10,
         commentsAllowed: true,
         content_text: "MongoDB is a NoSQL database...",
-        content_images: [imageBase64], // Keine Bilder in diesem Eintrag
+        content_images: [imagesBase64[0]],
         category_id: categoryIds[0]
     },
     {
         title: "Best Travel Destinations",
-        author_ids: [userIds[2]], // JaneDoe als Autorin
+        author_ids: [userIds[2]],
         description: "The best places to visit in 2025.",
         creationDate: new Date(),
         editDates: [],
         impressionCount: 25,
         commentsAllowed: true,
         content_text: "If you're planning your next vacation...",
-        content_images: [imageBase64], // Beispielbilder
+        content_images: [imagesBase64[1]],
         category_id: categoryIds[1]
     },
     {
         title: "Delicious Recipes",
-        author_ids: [userIds[4]], // Alice als Autorin
+        author_ids: [userIds[4]],
         description: "Try these amazing dishes at home.",
         creationDate: new Date(),
         editDates: [],
         impressionCount: 5,
         commentsAllowed: false,
         content_text: "Cooking is an art...",
-        content_images: [imageBase64],
+        content_images: [imagesBase64[3]],
         category_id: categoryIds[2]
     }
 ];
 db.BlogEntry.insertMany(blogEntries);
 
-// Blog-IDs abrufen
 const blogIds = db.BlogEntry.find().map(blog => blog._id);
 
-// 4. Kommentare hinzufügen (nur zu Einträgen, wo commentsAllowed = true)
 const comments = [
     { blog_entry_id: blogIds[0], user_id: userIds[1], content_text: "Great article!" },
     { blog_entry_id: blogIds[0], user_id: userIds[2], content_text: "Very helpful, thanks!" },
@@ -87,5 +79,3 @@ const comments = [
     { blog_entry_id: blogIds[1], user_id: userIds[3], content_text: "Nice recommendations!" }
 ];
 db.Comment.insertMany(comments);
-
-print("✅ Testdaten erfolgreich hinzugefügt!");
