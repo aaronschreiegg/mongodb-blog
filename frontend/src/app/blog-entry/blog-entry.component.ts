@@ -4,9 +4,9 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 enum MediaType {
-  PDF = 0,
-  Image = 1,
-  Video = 2
+  PDF = 'PDF',
+  Image = 'Image',
+  Video = 'Video'
 }
 
 @Component({
