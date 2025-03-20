@@ -39,7 +39,7 @@ export class BlogListComponent {
       {
         id: 1,
         title: "Erster Blogeintrag",
-        author_ids: [101],
+        author_ids: [101, 102, 103],
         description: "Dies ist eine kurze Beschreibung des ersten Eintrags.",
         content_text: "Hier steht der Inhalt des ersten Blogeintrags."
       },

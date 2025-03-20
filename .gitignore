@@ -79,3 +79,5 @@ data/
 mongod.lock
 storage.bson
 WiredTiger*
+
+pics/
