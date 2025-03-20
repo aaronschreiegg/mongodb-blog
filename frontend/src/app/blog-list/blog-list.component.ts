@@ -19,7 +19,11 @@ export class BlogListComponent {
 
     this.router.navigate(['/blog', blogEntry.id]);
   }
-  
+
+  goToUpload() {
+    this.router.navigate(['/upload']); 
+  }
+
   ngOnInit() {
     this.blogEntries.set([
       {
@@ -129,4 +133,6 @@ export class BlogListComponent {
     }
   ]);
   }
+
+  
 }

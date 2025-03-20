@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 enum MediaType {
   PDF = 0,
@@ -16,6 +17,10 @@ enum MediaType {
     styleUrls: ['./blog-entry.component.scss']
   })
   export class BlogEntryComponent {
+
+    public constructor(private router: Router) {
+    }
+
     blog = { title : '' };
     MediaType = MediaType;
     mediaType: MediaType = MediaType.PDF;
@@ -38,5 +43,9 @@ enum MediaType {
     uploadBlog() {
     }
 
-    
+    goBack() {
+      this.router.navigate(['/']); 
+    }
+
+
   }
