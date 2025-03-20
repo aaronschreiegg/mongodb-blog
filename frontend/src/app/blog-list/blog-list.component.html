@@ -1,31 +1,46 @@
-<div class="container mt-4">
-  <h2 class="text-center fw-bold text-primary">📖 Blog Einträge</h2>
-  <hr class="mb-4">
+<div class="main-container" [class.show-sidebar]="showSidebar">
+    <!-- Sidebar -->
+    <div class="sidebar" (mouseenter)="showSidebar = true" (mouseleave)="showSidebar = false">
+        <div class="sidebar-content" [class.show]="showSidebar">
+            <label for="querySelect">🔍 Query auswählen:</label>
+            <select id="querySelect" class="form-select" [(ngModel)]="selectedQuery">
+                <option *ngFor="let query of queries()" [value]="query">{{ query }}</option>
+            </select>
+            <button class="btn btn-primary mt-3" (click)="executeQuery()">Ausführen</button>
+        </div>
+    </div>
 
-  <div class="row justify-content-center">
-      <div class="col-md-10">
-          <div class="blog-entry-table table-responsive shadow-lg rounded">
-              <table class="table table-hover align-middle bg-white">
-                  <thead class="bg-primary text-white">
-                      <tr>
-                          <th class="p-3">📌 Titel</th>
-                          <th class="text-center p-3">👤 Autor</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      @for (blogEntry of blogEntries(); track $index) {
-                          <tr class="table-row" (click)="clickEntry(blogEntry)">
-                              <td class="p-3 fw-semibold text-dark">{{ blogEntry.title }}</td>
-                              <td class="text-center p-3 text-muted">{{ blogEntry.author_ids }}</td>
-                          </tr>
-                      }
-                  </tbody>
-              </table>
-          </div>
-      </div>
-  </div>
+    <!-- Blog-Inhalte (Tabelle) -->
+    <div class="container mt-4 content">
+        <h2 class="text-center fw-bold text-primary">📖 Blog Einträge</h2>
+        <hr class="mb-4">
+
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="blog-entry-table table-responsive shadow-lg rounded">
+                    <table class="table table-hover align-middle bg-white">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th class="p-3">📌 Titel</th>
+                                <th class="text-center p-3">👤 Autor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (blogEntry of blogEntries(); track $index) {
+                                <tr class="table-row" (click)="clickEntry(blogEntry)">
+                                    <td class="p-3 fw-semibold text-dark">{{ blogEntry.title }}</td>
+                                    <td class="text-center p-3 text-muted">{{ blogEntry.author_ids }}</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="text-center position-fixed bottom-0 start-50 translate-middle-x m-3 mt-">
-  <button (click)="goToUpload()" class="btn btn-primary">✍🏻 Neuer Blockeintrag</button>
+<!-- Neuer Blogeintrag-Button bleibt unten -->
+<div class="row text-center position-fixed bottom-0 start-50 translate-middle-x mb-4">
+    <button class="btn btn-primary col me-5" (click)="goToUpload()">✍🏻 Neuer Blockeintrag</button>
 </div>
