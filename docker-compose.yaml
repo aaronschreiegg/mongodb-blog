@@ -9,6 +9,8 @@ services:
       - "27017:27017"
     volumes:
       - ./data:/data/db
+      - ./init:/data/init
+      - ./init/pics:/data/pics
     networks:
       - internalnet
   
