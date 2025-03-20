@@ -1,7 +1,75 @@
 .blog-entry-table{
     cursor: pointer;
+    overflow-y: auto;
+    max-height: 80vh;
 
     th, td{
         cursor: pointer;
     }
+}
+
+.blog-entry-table::-webkit-scrollbar {
+    width: 8px;
+}
+
+.blog-entry-table::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.blog-entry-table::-webkit-scrollbar-thumb {
+    background: #d6d6d6;
+    border-radius: 10px;
+}
+
+.blog-entry-table::-webkit-scrollbar-thumb:hover {
+    background: #bababa;
+}
+
+.blog-entry-table {
+    scrollbar-width: thin;
+    scrollbar-color: #a2a2a2 #f1f1f1;
+}
+.main-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.4s ease-in-out; 
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 5px;
+    background: transparent;
+    transition: width 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+.sidebar-content {
+    position: absolute;
+    left: -280px; 
+    top: 0;
+    width: 280px;
+    height: 100%;
+    background: white;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    padding: 25px;
+    transition: left 0.4s ease-in-out; 
+}
+
+.sidebar-content.show {
+    left: 0;
+}
+
+.content {
+    max-width: 80%;
+    margin: auto;
+    transition: transform 0.4s ease-in-out;
+}
+
+.show-sidebar .content {
+    transform: translateX(130px); 
 }

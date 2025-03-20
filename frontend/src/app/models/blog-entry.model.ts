@@ -1,7 +1,7 @@
 export interface BlogEntry {
     id: number,
     title: string,
-    author_id: number,
+    author_ids: number[],
     description: string,
     //creationDate: Date,
     //editDates: Date[],

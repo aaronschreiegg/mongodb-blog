@@ -1,0 +1,92 @@
+<div class="container mt-4">
+    <div class="row">
+        <div class="container mt-4 position-relative">
+            <button class="btn btn-secondary fw-bold position-absolute top-0 start-0 m-3"
+                    (click)="goBack()">
+                Zurück
+            </button>
+        </div>
+    </div>
+
+    <div class="row align-items-center">
+        <div class="col-12 text-center">
+            <h2 class="mt-3 fw-bold text-primary">Blog Upload</h2>
+        </div>
+    </div>
+
+    <div class="mt-4 p-4 bg-light rounded shadow" style="max-width: 800px; margin: 30px auto;">
+        <form (submit)="uploadBlog()" #uploadForm="ngForm">
+            
+            <div class="form-group mb-4">
+                <label for="title">Titel:</label>
+                <input type="text" class="form-control form-control-lg"
+                       id="title" name="title"
+                       [(ngModel)]="blog.title" required />
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="author">Autor:</label>
+                <input type="text" class="form-control form-control-lg"
+                       id="author" name="author"
+                       [(ngModel)]="blog.author" required />
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="description">Beschreibung:</label>
+                <textarea id="description" class="form-control form-control-lg"
+                          [(ngModel)]="blog.description" name="description"></textarea>
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="mediaType">Medientyp:</label>
+                <select id="mediaType" class="form-control form-control-lg"
+                        [(ngModel)]="mediaType" name="mediaType" required>
+                    <option [ngValue]="MediaType.PDF">PDF</option>
+                    <option [ngValue]="MediaType.Image">Bild</option>
+                    <option [ngValue]="MediaType.Video">Video</option>
+                </select>
+            </div>
+
+            <ng-container [ngSwitch]="mediaType">
+                <ng-container *ngSwitchCase="MediaType.PDF">
+                    <div class="form-group mb-4">
+                        <label for="contentPDF">PDF-Dokument:</label>
+                        <input id="contentPDF" type="file" class="form-control form-control-lg"
+                               (change)="onContentFileChange($event)" accept="application/pdf" />
+                    </div>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="MediaType.Image">
+                    <div class="form-group mb-4">
+                        <label for="contentImage">Bild:</label>
+                        <input id="contentImage" type="file" class="form-control form-control-lg"
+                               (change)="onContentFileChange($event)" accept="image/*" />
+                    </div>
+                    <div class="preview" *ngIf="blog.images.length > 0">
+                        <h5>Bildvorschau:</h5>
+                        <div *ngFor="let img of blog.images">
+                            <img [src]="img" style="max-width: 100%; height: auto; margin-bottom: 10px;">
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="MediaType.Video">
+                    <div class="form-group mb-4">
+                        <label for="contentVideo">Video:</label>
+                        <input id="contentVideo" type="file" class="form-control form-control-lg"
+                               (change)="onContentFileChange($event)" accept="video/mp4,video/*" />
+                    </div>
+                </ng-container>
+            </ng-container>
+
+            <div class="form-group mb-4">
+                <label for="commentsAllowed">Kommentare erlaubt: </label>
+                <input type="checkbox" id="commentsAllowed" [(ngModel)]="blog.commentsAllowed" name="commentsAllowed" />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block w-100" style="font-size: 18px; padding: 15px;">
+                Hochladen
+            </button>
+        </form>
+    </div>
+</div>
