@@ -16,7 +16,7 @@
                       @for (blogEntry of blogEntries(); track $index) {
                           <tr class="table-row" (click)="clickEntry(blogEntry)">
                               <td class="p-3 fw-semibold text-dark">{{ blogEntry.title }}</td>
-                              <td class="text-center p-3 text-muted">{{ blogEntry.author_id }}</td>
+                              <td class="text-center p-3 text-muted">{{ blogEntry.author_ids }}</td>
                           </tr>
                       }
                   </tbody>
