@@ -15,37 +15,58 @@ enum MediaType {
     imports: [FormsModule, CommonModule],
     templateUrl: './blog-entry.component.html',
     styleUrls: ['./blog-entry.component.scss']
-  })
-  export class BlogEntryComponent {
+})
+export class BlogEntryComponent {
+  
+    constructor(private router: Router) {}
 
-    public constructor(private router: Router) {
-    }
-
-    blog = { title : '' };
     MediaType = MediaType;
     mediaType: MediaType = MediaType.PDF;
-    thumbnailFile: File | null = null;
-    contentFile: File | null = null;
-    description = '';
-    thumbnailTouched = false;
-    contentTouched = false;
 
-    onThumbnailChange(event: any) {
-      this.thumbnailFile = event.target.files[0];
-      this.thumbnailTouched = true;
-    }
-  
+    blog = {
+        title: '',
+        author: '',
+        description: '',
+        creationDate: new Date(),
+        editDates: [] as Date[],
+        impressionCount: 0,
+        content: '',
+        commentsAllowed: true,
+        images: [] as string[]  // Base64-encoded images
+    };
+
+    contentFile: File | null = null;
+    contentTouched = false;
+    thumbnailTouched = false;
+
     onContentFileChange(event: any) {
-      this.contentFile = event.target.files[0];
-      this.contentTouched = true;
+        const file = event.target.files[0];
+        if (file) {
+            this.contentTouched = true;
+            if (this.mediaType === MediaType.Image) {
+                this.convertImageToBase64(file);
+            } else {
+                this.contentFile = file;
+            }
+        }
+    }
+
+    convertImageToBase64(file: File) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            if (typeof reader.result === 'string') {
+                this.blog.images.push(reader.result); // Speichert als Base64
+            }
+        };
     }
 
     uploadBlog() {
+        this.blog.creationDate = new Date();
+        console.log("Blog hochgeladen:", this.blog);
     }
 
     goBack() {
-      this.router.navigate(['/']); 
+        this.router.navigate(['/']);
     }
-
-
-  }
+}
