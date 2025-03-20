@@ -23,6 +23,18 @@ services:
     networks:
       - internalnet
 
+  backend:
+    build: ./backend
+    container_name: BlogBackend
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    networks:
+      - internalnet
+
 volumes:
   data:
 
