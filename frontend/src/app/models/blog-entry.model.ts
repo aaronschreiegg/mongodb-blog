@@ -1,11 +1,12 @@
 export interface BlogEntry {
-    id: number,
-    title: string,
-    author_ids: number[],
-    description: string,
+    _id?: string;
+    title: string;
+    author_ids: any[];
+    description: string;
     //creationDate: Date,
     //editDates: Date[],
     //impressionCount: number,
-    //commentsAllowed: boolean,
-    content_text: string
+    content_text: string;
+    content_images?: string[];
+    commentsAllowed?: boolean;
 }

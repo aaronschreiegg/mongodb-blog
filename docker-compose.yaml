@@ -8,9 +8,8 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./data:/data/db
-      - ./init:/data/init
-      - ./init/pics:/data/pics
+      - mongodb_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
     networks:
       - internalnet
   
@@ -27,16 +26,18 @@ services:
     build: ./backend
     container_name: BlogBackend
     environment:
-      - NODE_ENV=production
+      APP_NAME: Blog
+      PORT: 3000
+      DB_URI: mongodb://admin:weLoveMongo@mongodb:27017/Blog
     ports:
-      - "5000:5000"
+      - "4000:3000"
     depends_on:
       - mongodb
     networks:
       - internalnet
 
 volumes:
-  data:
+  mongodb_data:
 
 networks:
   internalnet:

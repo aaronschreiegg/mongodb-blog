@@ -4,7 +4,7 @@
       <div class="sidebar-content" [class.show]="showSidebar">
         <label for="querySelect">🔍 Query auswählen:</label>
         <select id="querySelect" class="form-select" [(ngModel)]="selectedQuery">
-          <option *ngFor="let query of queries()" [value]="query">{{ query }}</option>
+          <option *ngFor="let query of queries" [value]="query">{{ query }}</option>
         </select>
         <button class="btn btn-primary mt-3" (click)="executeQuery()">Ausführen</button>
       </div>
@@ -25,7 +25,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let blogEntry of filteredBlogEntries()" class="table-row" (click)="clickEntry(blogEntry)">
+                <tr *ngFor="let blogEntry of getFilteredEntries()" class="table-row" (click)="clickEntry(blogEntry)">
                   <td class="p-3 fw-semibold text-dark">{{ blogEntry.title }}</td>
                   <td class="text-center p-3 text-muted">{{ blogEntry.author_ids }}</td>
                 </tr>

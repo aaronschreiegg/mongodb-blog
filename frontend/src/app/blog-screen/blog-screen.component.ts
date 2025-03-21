@@ -1,29 +1,47 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BlogEntry } from '../models/blog-entry.model';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-blog-screen',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './blog-screen.component.html',
   styleUrl: './blog-screen.component.scss'
 })
-export class BlogScreenComponent {
+export class BlogScreenComponent implements OnInit {
   selectedBlogEntry: BlogEntry | undefined;
 
-  blogEntries: BlogEntry[] = [
-    { id: 1, title: 'Erster Artikel', author_ids: [101, 102, 103], description:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ", content_text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' },
-    { id: 2, title: 'Zweiter Artikel', author_ids: [102], description:"Beschreibung 2", content_text: 'Hier steht ein weiterer ausführlicher Inhalt...' }
-  ];
-
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private router: Router,
+    private http: HttpClient
+  ) {}
 
   ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.selectedBlogEntry = this.blogEntries.find(entry => entry.id === id);
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.loadBlogEntry(id);
+    }
   }
 
-  goBack(){
+  loadBlogEntry(id: string) {
+    this.http.get<any>(`http://localhost:4000/blogs/${id}`).subscribe({
+      next: (response) => {
+        if (response.status === 200 && response.data) {
+          this.selectedBlogEntry = response.data;
+        }
+      },
+      error: (error) => {
+        console.error('Error loading blog entry:', error);
+        this.router.navigate(['/']); // Bei Fehler zurück zur Liste
+      }
+    });
+  }
+
+  goBack() {
     this.router.navigate(['/']);
   }
 }

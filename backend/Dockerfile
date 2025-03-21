@@ -1,20 +1,9 @@
-# Dockerfile für Node.js (Backend)
-FROM node:20-alpine
-
-# Arbeitsverzeichnis im Container erstellen
-WORKDIR /app
-
-# package.json und package-lock.json kopieren
-COPY package*.json ./
-
-# Abhängigkeiten installieren
+FROM node:alpine
+WORKDIR /usr/src/app
+COPY ./package.json ./
+COPY ./package-lock.json ./
 RUN npm install
-
-# Anwendungskodex kopieren
-COPY . ./
-
-# Exponiere den Port, auf dem die App läuft
-EXPOSE 5000
-
-# Startbefehl für den Server
-CMD ["node", "index.js"]
+COPY . .
+COPY ./.env ./
+COPY ./config.js ./
+CMD ["npm", "start"]
