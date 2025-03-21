@@ -1,35 +1,22 @@
-.blog-entry-table{
+.blog-entry-table {
     cursor: pointer;
     overflow-y: auto;
     max-height: 80vh;
 
-    th, td{
+    th, td {
         cursor: pointer;
     }
 }
 
-.blog-entry-table::-webkit-scrollbar {
-    width: 8px;
+.card {
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
 }
 
-.blog-entry-table::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
+.card:hover {
+    transform: scale(1.03);
 }
 
-.blog-entry-table::-webkit-scrollbar-thumb {
-    background: #d6d6d6;
-    border-radius: 10px;
-}
-
-.blog-entry-table::-webkit-scrollbar-thumb:hover {
-    background: #bababa;
-}
-
-.blog-entry-table {
-    scrollbar-width: thin;
-    scrollbar-color: #a2a2a2 #f1f1f1;
-}
 .main-container {
     display: flex;
     align-items: center;

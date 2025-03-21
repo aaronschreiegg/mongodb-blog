@@ -12,11 +12,22 @@ import { FormsModule } from '@angular/forms';
 })
 export class BlogListComponent {
   showSidebar = false;
+  showCards = false; 
   selectedQuery: string = '';
   blogEntries = signal<BlogEntry[] | undefined>([]);
   queries = signal<string[]>([]);
 
   constructor(private router: Router) {}
+
+
+  toggleView() {
+    this.showCards = !this.showCards;
+    localStorage.setItem('showCards', JSON.stringify(this.showCards)); 
+  }
+
+  getAuthorLabel(authorIds: number[]): string {
+    return authorIds.length === 1 ? "👤 Autor" : "👥 Autoren";
+  }
 
   clickEntry(blogEntry: BlogEntry) {
     console.log("Clicked on blog entry: " + blogEntry.title);
@@ -35,6 +46,9 @@ export class BlogListComponent {
   }
 
   ngOnInit() {
+    const savedView = localStorage.getItem('showCards');
+    this.showCards = savedView ? JSON.parse(savedView) : false; 
+
     this.blogEntries.set([
       {
         id: 1,
