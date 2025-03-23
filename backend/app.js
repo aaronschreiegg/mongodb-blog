@@ -5,6 +5,7 @@ import config from "./config.js";
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import blogCategoryRoutes from './routes/blog-category.routes.js';
+import commentRoutes from './routes/comment.routes.js';
 
 const connectToDB = async () => {
     try {
@@ -31,6 +32,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 app.use('/blogs', productRoutes);
 app.use('/categories', blogCategoryRoutes);
+app.use('/comments', commentRoutes);
 
 await connectToDB();
 

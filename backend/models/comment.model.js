@@ -3,12 +3,11 @@ import mongoose from 'mongoose';
 const commentSchema = new mongoose.Schema({
     blog_entry_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'BlogEntry',
+        ref: 'Blog',
         required: true
     },
     user_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'BlogUser',
+        type: String,
         required: true
     },
     content_text: {

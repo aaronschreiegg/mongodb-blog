@@ -27,7 +27,7 @@
               <tbody>
                 <tr *ngFor="let blogEntry of getFilteredEntries()" class="table-row" (click)="clickEntry(blogEntry)">
                   <td class="p-3 fw-semibold text-dark">{{ blogEntry.title }}</td>
-                  <td class="text-center p-3 text-muted">{{ blogEntry.author_ids }}</td>
+                  <td class="text-center p-3 text-muted">{{ blogEntry.author }}</td>
                 </tr>
               </tbody>
             </table>

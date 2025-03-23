@@ -59,7 +59,7 @@ export class BlogListComponent implements OnInit {
           this.filteredBlogEntries = this.blogEntries.filter(entry => entry.title.includes('Blog'));
           break;
         case "Query 2":
-          this.filteredBlogEntries = this.blogEntries.filter(entry => entry.author_ids.length > 0);
+          this.filteredBlogEntries = this.blogEntries.filter(entry => entry.author && entry.author.length > 0);
           break;
         case "Query 3":
           this.filteredBlogEntries = this.blogEntries.filter(entry => entry.description && entry.description.length > 10);

@@ -1,12 +1,13 @@
 export interface BlogEntry {
     _id?: string;
     title: string;
-    author_ids: any[];
+    author: string;
     description: string;
-    //creationDate: Date,
-    //editDates: Date[],
-    //impressionCount: number,
     content_text: string;
+    creationDate: Date;
+    editDates: Date[];
+    impressionCount: number;
+    commentsAllowed: boolean;
     content_images?: string[];
-    commentsAllowed?: boolean;
+    category_id: string;
 }
