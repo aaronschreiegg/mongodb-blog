@@ -3,10 +3,12 @@ import mongoose from 'mongoose';
 const blogSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     author: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'BlogUser',
         required: true
     },
     description: {

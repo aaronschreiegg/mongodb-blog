@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import blogCategoryRoutes from './routes/blog-category.routes.js';
 import commentRoutes from './routes/comment.routes.js';
+import userRoutes from './routes/blog-user.routes.js';
 
 const connectToDB = async () => {
     try {
@@ -29,7 +30,7 @@ app.use(cors({
 // Erhöhe das Limit für JSON-Payload
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-
+app.use('/users', userRoutes);
 app.use('/blogs', productRoutes);
 app.use('/categories', blogCategoryRoutes);
 app.use('/comments', commentRoutes);

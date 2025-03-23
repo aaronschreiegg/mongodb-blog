@@ -3,16 +3,14 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { Category } from '../models/categories.model';
+import { BlogUser } from '../models/blog-user.model';
+import { response } from 'express';
 
 enum MediaType {
   PDF = 'PDF',
   Image = 'Image',
   Video = 'Video'
-}
-
-interface Category {
-  _id: string;
-  name: string;
 }
 
 @Component({
@@ -35,10 +33,11 @@ export class BlogEntryComponent implements OnInit {
     selectedCategory: string = '';
     newCategoryName: string = '';
     showNewCategoryInput: boolean = false;
+    users: BlogUser[] = [];
 
     blog = {
         title: '',
-        author: '',
+        authors: [],
         description: '',
         creationDate: new Date(),
         editDates: [] as Date[],
@@ -56,6 +55,20 @@ export class BlogEntryComponent implements OnInit {
     ngOnInit() {
         // Lade Kategorien beim Start
         this.loadCategories();
+        this.loadBlogUsers();
+    }
+
+    loadBlogUsers() {
+        this.http.get<any>('http://localhost:4000/users').subscribe({
+            next: (response) => {
+                if(response.status === 200 && response.data) {
+                    this.users = response.data;
+                }
+            },
+            error: (error) => {
+                console.error("Fehler beim Laden der User:", error);
+            }
+        });
     }
 
     loadCategories() {
@@ -171,7 +184,7 @@ export class BlogEntryComponent implements OnInit {
         // Bereite die Daten für das Backend vor
         const blogData = {
             title: this.blog.title,
-            author: this.blog.author,
+            author: this.blog.authors,
             description: this.blog.description,
             content: this.blog.content.trim(), // Entferne überflüssige Leerzeichen
             commentsAllowed: this.blog.commentsAllowed,

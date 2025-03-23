@@ -1,6 +1,6 @@
 import BlogUser from '../models/blog-user.model.js';
 
-async function getAllUsers(req, res) {
+export async function getAllUsers(req, res) {
     try {
         const users = await BlogUser.find().select('-password');
         return res.status(200).json({
@@ -16,7 +16,7 @@ async function getAllUsers(req, res) {
     }
 }
 
-async function getUserById(req, res) {
+export async function getUserById(req, res) {
     try {
         const user = await BlogUser.findById(req.params.id).select('-password');
         
@@ -40,16 +40,14 @@ async function getUserById(req, res) {
     }
 }
 
-async function createUser(req, res) {
+export async function createUser(req, res) {
     try {
-        const { username, firstname, lastname, email, password } = req.body;
+        const { username, firstname, lastname } = req.body;
         
         const user = new BlogUser({
             username,
             firstname,
-            lastname,
-            email,
-            password
+            lastname
         });
 
         await user.save();
@@ -61,8 +59,7 @@ async function createUser(req, res) {
                 id: user._id,
                 username: user.username,
                 firstname: user.firstname,
-                lastname: user.lastname,
-                email: user.email
+                lastname: user.lastname
             }
         });
     } catch (error) {
@@ -74,9 +71,9 @@ async function createUser(req, res) {
     }
 }
 
-async function updateUser(req, res) {
+export async function updateUser(req, res) {
     try {
-        const { firstname, lastname, email } = req.body;
+        const { firstname, lastname } = req.body;
         const user = await BlogUser.findById(req.params.id);
         
         if (!user) {
@@ -88,7 +85,6 @@ async function updateUser(req, res) {
 
         user.firstname = firstname;
         user.lastname = lastname;
-        user.email = email;
         await user.save();
 
         return res.status(200).json({
@@ -99,7 +95,6 @@ async function updateUser(req, res) {
                 username: user.username,
                 firstname: user.firstname,
                 lastname: user.lastname,
-                email: user.email
             }
         });
     } catch (error) {
@@ -111,7 +106,7 @@ async function updateUser(req, res) {
     }
 }
 
-async function deleteUser(req, res) {
+export async function deleteUser(req, res) {
     try {
         const user = await BlogUser.findByIdAndDelete(req.params.id);
         
@@ -134,52 +129,3 @@ async function deleteUser(req, res) {
         });
     }
 }
-
-async function login(req, res) {
-    try {
-        const { username, password } = req.body;
-        const user = await BlogUser.findOne({ username });
-        
-        if (!user) {
-            return res.status(404).json({
-                status: 404,
-                message: 'Benutzer nicht gefunden'
-            });
-        }
-
-        const isMatch = await user.comparePassword(password);
-        if (!isMatch) {
-            return res.status(401).json({
-                status: 401,
-                message: 'Ungültige Anmeldedaten'
-            });
-        }
-
-        return res.status(200).json({
-            status: 200,
-            message: 'Login erfolgreich',
-            data: {
-                id: user._id,
-                username: user.username,
-                firstname: user.firstname,
-                lastname: user.lastname,
-                email: user.email
-            }
-        });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            message: 'Ein Fehler ist aufgetreten',
-            error: error.message
-        });
-    }
-}
-
-export default {
-    getAllUsers,
-    getUserById,
-    createUser,
-    updateUser,
-    deleteUser,
-    login
-}; 
