@@ -1,10 +1,18 @@
 import Blog from "../models/blog.model.js";
 import mongoose from 'mongoose';
+import BlogUser from "../models/blog-user.model.js";
 
 
 async function getAllBlogs(req, res) {
     try {
-        const blogs = await Blog.find();
+        const blogs = await Blog.find()
+            .populate({
+                path: 'author_ids',
+                model: 'BlogUser',
+                select: 'username firstname lastname'
+            })
+            .populate('category_id', 'name')
+            .sort({ creationDate: -1 });
         return res.status(200).json({
             status: 200,
             data: blogs
@@ -20,13 +28,21 @@ async function getAllBlogs(req, res) {
 
 async function getBlogById(req, res) {
     try {
-        const blog = await Blog.findById(req.params.id);
+        const blog = await Blog.findById(req.params.id)
+            .populate({
+                path: 'author_ids',
+                model: 'BlogUser',
+                select: 'username firstname lastname'
+            })
+            .populate('category_id', 'name');
+        
         if (!blog) {
             return res.status(404).json({
                 status: 404,
                 message: 'Blog nicht gefunden'
             });
         }
+
         return res.status(200).json({
             status: 200,
             data: blog
@@ -68,18 +84,19 @@ async function createTestBlog(req, res) {
 
 async function createBlog(req, res) {
     try {
-        const { title, author, description, content, commentsAllowed, images } = req.body;
+        const { title, author, description, content, commentsAllowed, images, category_id } = req.body;
         
-        // Erstelle eine temporäre Author ID
+        // Erstelle eine temporäre Author-ID
         const tempAuthorId = new mongoose.Types.ObjectId();
         
         const blog = new Blog({
-            title: title,
-            author_ids: [tempAuthorId], // Verwende die temporäre ID
-            description: description,
-            content_text: content || '', // Verwende content als content_text
-            commentsAllowed: commentsAllowed,
-            content_images: images || []
+            title,
+            author_ids: [tempAuthorId],
+            description,
+            content_text: content || '', // Stelle sicher, dass content_text immer einen Wert hat
+            commentsAllowed,
+            content_images: images || [],
+            category_id: category_id // Füge die Kategorie-ID hinzu
         });
 
         await blog.save();

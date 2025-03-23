@@ -27,10 +27,10 @@ services:
     container_name: BlogBackend
     environment:
       APP_NAME: Blog
-      PORT: 3000
+      PORT: 4000
       DB_URI: mongodb://admin:weLoveMongo@mongodb:27017/Blog
     ports:
-      - "4000:3000"
+      - "4000:4000"
     depends_on:
       - mongodb
     networks:

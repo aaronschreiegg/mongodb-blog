@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import config from "./config.js";
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import blogCategoryRoutes from './routes/blog-category.routes.js';
 
 const connectToDB = async () => {
     try {
@@ -29,7 +30,17 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 app.use('/blogs', productRoutes);
+app.use('/categories', blogCategoryRoutes);
 
 await connectToDB();
+
+// Error Handling
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        message: 'Ein Fehler ist aufgetreten',
+        error: err.message
+    });
+});
 
 export default app;

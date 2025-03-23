@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -10,6 +10,11 @@ enum MediaType {
   Video = 'Video'
 }
 
+interface Category {
+  _id: string;
+  name: string;
+}
+
 @Component({
     selector: 'app-upload',
     standalone: true,
@@ -17,7 +22,7 @@ enum MediaType {
     templateUrl: './blog-entry.component.html',
     styleUrls: ['./blog-entry.component.scss']
 })
-export class BlogEntryComponent {
+export class BlogEntryComponent implements OnInit {
   
     constructor(
         private router: Router,
@@ -26,6 +31,10 @@ export class BlogEntryComponent {
 
     MediaType = MediaType;
     mediaType: MediaType = MediaType.PDF;
+    categories: Category[] = [];
+    selectedCategory: string = '';
+    newCategoryName: string = '';
+    showNewCategoryInput: boolean = false;
 
     blog = {
         title: '',
@@ -36,12 +45,57 @@ export class BlogEntryComponent {
         impressionCount: 0,
         content: '',
         commentsAllowed: true,
-        images: [] as string[]  // Base64-encoded images
+        images: [] as string[],  // Base64-encoded images
+        category_id: ''  // Neue Kategorie-ID
     };
 
     contentFile: File | null = null;
     contentTouched = false;
     thumbnailTouched = false;
+
+    ngOnInit() {
+        // Lade Kategorien beim Start
+        this.loadCategories();
+    }
+
+    loadCategories() {
+        this.http.get<any>('http://localhost:4000/categories').subscribe({
+            next: (response) => {
+                if (response.status === 200 && response.data) {
+                    this.categories = response.data;
+                }
+            },
+            error: (error) => {
+                console.error('Fehler beim Laden der Kategorien:', error);
+            }
+        });
+    }
+
+    createNewCategory() {
+        if (!this.newCategoryName.trim()) {
+            alert('Bitte geben Sie einen Kategorienamen ein');
+            return;
+        }
+
+        this.http.post('http://localhost:4000/categories', { name: this.newCategoryName.trim() }).subscribe({
+            next: (response: any) => {
+                if (response.status === 201) {
+                    // Lade die Kategorien neu
+                    this.loadCategories();
+                    // Setze die neue Kategorie als ausgewählt
+                    this.blog.category_id = response.data._id;
+                    // Verstecke das Eingabefeld
+                    this.showNewCategoryInput = false;
+                    // Setze das Eingabefeld zurück
+                    this.newCategoryName = '';
+                }
+            },
+            error: (error) => {
+                console.error('Fehler beim Erstellen der Kategorie:', error);
+                alert('Fehler beim Erstellen der Kategorie: ' + error.error.message);
+            }
+        });
+    }
 
     onContentFileChange(event: any) {
         const file = event.target.files[0];
@@ -51,8 +105,8 @@ export class BlogEntryComponent {
                 this.compressAndConvertImage(file);
             } else {
                 this.contentFile = file;
-                // Wenn es eine PDF oder Video ist, speichern wir den Dateinamen als content
-                this.blog.content = file.name;
+                // Bei PDF oder Video fügen wir nur einen Zeilenumbruch ein
+                this.blog.content += '\n\n';
             }
         }
     }
@@ -97,15 +151,20 @@ export class BlogEntryComponent {
                 // Konvertiere zu Base64 mit reduzierter Qualität
                 const compressedImage = canvas.toDataURL('image/jpeg', 0.7);
                 this.blog.images.push(compressedImage);
-                // Bei Bildern setzen wir den Dateinamen als content
-                this.blog.content = file.name;
+                // Füge nur einen Zeilenumbruch ein
+                this.blog.content += '\n\n';
             };
         };
     }
 
     uploadBlog() {
-        if (!this.blog.content) {
-            console.error('Kein Inhalt ausgewählt');
+        if (!this.blog.content.trim()) {
+            console.error('Kein Inhalt eingegeben');
+            return;
+        }
+
+        if (!this.blog.category_id) {
+            console.error('Keine Kategorie ausgewählt');
             return;
         }
 
@@ -114,9 +173,10 @@ export class BlogEntryComponent {
             title: this.blog.title,
             author: this.blog.author,
             description: this.blog.description,
-            content: this.blog.content, // Dies wird als content_text im Backend verwendet
+            content: this.blog.content.trim(), // Entferne überflüssige Leerzeichen
             commentsAllowed: this.blog.commentsAllowed,
-            images: this.blog.images
+            images: this.blog.images,
+            category_id: this.blog.category_id
         };
 
         // Sende die Daten an das Backend
