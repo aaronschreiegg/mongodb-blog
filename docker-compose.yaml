@@ -9,7 +9,8 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./init:/data/init
+      - ./init/pics:/data/pics
     networks:
       - internalnet
   

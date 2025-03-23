@@ -73,7 +73,7 @@ const blogIds = db.BlogUser.find().toArray().map(blog => blog._id);
 const comments = [
     { blog_entry_id: blogIds[0], user_id: userIds[1], content_text: "Great article!" },
     { blog_entry_id: blogIds[0], user_id: userIds[2], content_text: "Very helpful, thanks!" },
-    { log_entry_id: blogIds[1], user_id: userIds[0], content_text: "I want to visit these places!" },
+    { blog_entry_id: blogIds[1], user_id: userIds[0], content_text: "I want to visit these places!" },
     { blog_entry_id: blogIds[1], user_id: userIds[3], content_text: "Nice recommendations!" }
 ];
 db.Comment.insertMany(comments);

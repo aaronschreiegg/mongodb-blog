@@ -61,7 +61,7 @@ while true; do
       break;
   else
       echo "Datenbank 'Blog' existiert nicht. Erstelle sie jetzt..."
-      docker exec "$CONTAINER_NAME" mongosh -u "$MONGO_USER" -p "$MONGO_PASSWORD" --authenticationDatabase "$MONGO_AUTH_DB" --eval "db.getSiblingDB('Blog').createCollection('init');"
+      docker exec "$CONTAINER_NAME" mongosh -u "$MONGO_USER" -p "$MONGO_PASSWORD" --authenticationDatabase "admin" --eval "use Blog;"
   fi
   sleep 1
 done
