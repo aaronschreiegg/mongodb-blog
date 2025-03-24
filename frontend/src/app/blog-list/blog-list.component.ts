@@ -25,17 +25,15 @@ export class BlogListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadBlogEntries();
+    this.loadBlogEntries();  // Load blog entries when component initializes
   }
 
   loadBlogEntries() {
-    this.http.get<any>('http://localhost:4000/blogs').subscribe({
+    this.http.get<BlogEntry[]>('http://localhost:5000/blogs').subscribe({
       next: (response) => {
         console.log('Loaded entries:', response);
-        if (response.status === 200 && response.data) {
-          this.blogEntries = response.data;
-          this.filteredBlogEntries = response.data;
-        }
+        this.blogEntries = response;
+        this.filteredBlogEntries = response;
       },
       error: (error) => {
         console.error('Error loading entries:', error);

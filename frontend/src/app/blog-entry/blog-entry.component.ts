@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { BlogUser } from '../models/author.model';
+import { Category } from '../models/category.model';
+import { CommonModule, NgClass } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 enum MediaType {
   PDF = 'PDF',
@@ -10,35 +12,23 @@ enum MediaType {
   Video = 'Video'
 }
 
-interface Category {
-  _id: string;
-  name: string;
-}
-
 @Component({
     selector: 'app-upload',
     standalone: true,
-    imports: [FormsModule, CommonModule],
+    imports: [CommonModule, FormsModule],
     templateUrl: './blog-entry.component.html',
     styleUrls: ['./blog-entry.component.scss']
 })
 export class BlogEntryComponent implements OnInit {
-  
-    constructor(
-        private router: Router,
-        private http: HttpClient
-    ) {}
+
+    constructor(private router: Router, private http: HttpClient) {}
 
     MediaType = MediaType;
-    mediaType: MediaType = MediaType.PDF;
-    categories: Category[] = [];
-    selectedCategory: string = '';
-    newCategoryName: string = '';
-    showNewCategoryInput: boolean = false;
+    mediaType: MediaType = MediaType.Image;
 
     blog = {
         title: '',
-        author: '',
+        author_ids: [],
         description: '',
         creationDate: new Date(),
         editDates: [] as Date[],
@@ -46,124 +36,116 @@ export class BlogEntryComponent implements OnInit {
         content: '',
         commentsAllowed: true,
         images: [] as string[],  // Base64-encoded images
-        category_id: ''  // Neue Kategorie-ID
+        category: ''
     };
 
     contentFile: File | null = null;
     contentTouched = false;
     thumbnailTouched = false;
+    authors: BlogUser[] = [];  // Array von Autoren
+    categories: Category[] = [];  // Array von Kategorien
+    newCategory: string = '';
 
     ngOnInit() {
-        // Lade Kategorien beim Start
+        // Autoren und Kategorien laden
+        this.loadAuthors();
         this.loadCategories();
     }
 
+    loadAuthors() {
+        this.http.get<BlogUser[]>('http://localhost:5000/users').subscribe(data => {
+            this.authors = data;
+        }, error => {
+            console.error("Fehler beim Abrufen der Benutzer:", error);
+        });
+    }
+    
     loadCategories() {
-        this.http.get<any>('http://localhost:4000/categories').subscribe({
-            next: (response) => {
-                if (response.status === 200 && response.data) {
-                    this.categories = response.data;
-                }
-            },
-            error: (error) => {
-                console.error('Fehler beim Laden der Kategorien:', error);
-            }
+        this.http.get<Category[]>('http://localhost:5000/categories').subscribe(data => {
+            this.categories = data;
+        }, error => {
+            console.error("Fehler beim Aufrufen der Kategorien:", error);
         });
-    }
-
-    createNewCategory() {
-        if (!this.newCategoryName.trim()) {
-            alert('Bitte geben Sie einen Kategorienamen ein');
-            return;
-        }
-
-        this.http.post('http://localhost:4000/categories', { name: this.newCategoryName.trim() }).subscribe({
-            next: (response: any) => {
-                if (response.status === 201) {
-                    // Lade die Kategorien neu
-                    this.loadCategories();
-                    // Setze die neue Kategorie als ausgewählt
-                    this.blog.category_id = response.data._id;
-                    // Verstecke das Eingabefeld
-                    this.showNewCategoryInput = false;
-                    // Setze das Eingabefeld zurück
-                    this.newCategoryName = '';
-                }
-            },
-            error: (error) => {
-                console.error('Fehler beim Erstellen der Kategorie:', error);
-                alert('Fehler beim Erstellen der Kategorie: ' + error.error.message);
-            }
-        });
-    }
+    }    
 
     onContentFileChange(event: any) {
         const file = event.target.files[0];
         if (file) {
             this.contentTouched = true;
             if (this.mediaType === MediaType.Image) {
-                this.compressAndConvertImage(file);
+                this.convertImageToBase64(file);
             } else {
                 this.contentFile = file;
-                // Bei PDF oder Video fügen wir nur einen Zeilenumbruch ein
-                this.blog.content += '\n\n';
             }
         }
     }
 
-    compressAndConvertImage(file: File) {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            const img = new Image();
-            img.src = reader.result as string;
-            
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d')!;
+    convertImageToBase64(file: File) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const img = new Image();
+                img.src = reader.result as string;
                 
-                // Maximale Dimensionen
-                const MAX_WIDTH = 800;
-                const MAX_HEIGHT = 600;
-                
-                let width = img.width;
-                let height = img.height;
-                
-                // Berechne neue Dimensionen unter Beibehaltung des Seitenverhältnisses
-                if (width > height) {
-                    if (width > MAX_WIDTH) {
-                        height *= MAX_WIDTH / width;
-                        width = MAX_WIDTH;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d')!;
+                    
+                    // Maximale Dimensionen
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 600;
+                    
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // Berechne neue Dimensionen unter Beibehaltung des Seitenverhältnisses
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
                     }
-                } else {
-                    if (height > MAX_HEIGHT) {
-                        width *= MAX_HEIGHT / height;
-                        height = MAX_HEIGHT;
-                    }
-                }
-                
-                canvas.width = width;
-                canvas.height = height;
-                
-                // Zeichne das Bild mit den neuen Dimensionen
-                ctx.drawImage(img, 0, 0, width, height);
-                
-                // Konvertiere zu Base64 mit reduzierter Qualität
-                const compressedImage = canvas.toDataURL('image/jpeg', 0.7);
-                this.blog.images.push(compressedImage);
-                // Füge nur einen Zeilenumbruch ein
-                this.blog.content += '\n\n';
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    // Zeichne das Bild mit den neuen Dimensionen
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Konvertiere zu Base64 mit reduzierter Qualität
+                    const compressedImage = canvas.toDataURL('image/jpeg', 0.7);
+                    this.blog.images.push(compressedImage);
+                    // Füge nur einen Zeilenumbruch ein
+                    this.blog.content += '\n\n';
+                };
             };
-        };
+        }
+
+    uploadCategory() {
+        // Neue Kategorie erstellen, falls notwendig
+        if (this.newCategory) {
+            this.http.post('http://localhost:5000/categories', { name: this.newCategory }).subscribe(() => {
+                this.loadCategories();  // Nach der Erstellung die Kategorien neu laden
+                this.blog.category = this.newCategory;
+                this.saveBlog();
+            });
+        } else {
+            this.saveBlog();
+        }
     }
 
-    uploadBlog() {
+    saveBlog() {
         if (!this.blog.content.trim()) {
             console.error('Kein Inhalt eingegeben');
             return;
         }
 
-        if (!this.blog.category_id) {
+        if (!this.blog.category) {
             console.error('Keine Kategorie ausgewählt');
             return;
         }
@@ -171,16 +153,17 @@ export class BlogEntryComponent implements OnInit {
         // Bereite die Daten für das Backend vor
         const blogData = {
             title: this.blog.title,
-            author: this.blog.author,
+            author_ids: this.blog.author_ids,  
             description: this.blog.description,
-            content: this.blog.content.trim(), // Entferne überflüssige Leerzeichen
+            content_text: this.blog.content.trim(), 
             commentsAllowed: this.blog.commentsAllowed,
-            images: this.blog.images,
-            category_id: this.blog.category_id
+            content_images: this.blog.images,  
+            category_id: this.blog.category
         };
+        
 
         // Sende die Daten an das Backend
-        this.http.post('http://localhost:4000/blogs', blogData).subscribe({
+        this.http.post('http://localhost:5000/blogs', blogData).subscribe({
             next: (response: any) => {
                 console.log('Blog erfolgreich erstellt:', response);
                 this.router.navigate(['/']); // Zurück zur Blog-Liste

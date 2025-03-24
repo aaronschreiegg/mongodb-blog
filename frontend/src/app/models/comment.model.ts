@@ -1,7 +1,8 @@
 export interface Comment {
-    _id?: string;
+    _id: string;
     blog_entry_id: string;
-    user_id: string;
+    user_id: { _id: string, username: string } | string; 
     content_text: string;
-    created_at: Date;
-} 
+    created_at?: string;
+  }
+  
