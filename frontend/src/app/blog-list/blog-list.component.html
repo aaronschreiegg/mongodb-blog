@@ -27,14 +27,14 @@
               <thead class="bg-primary text-white">
               <tr>
                 <th class="p-3">📌 Titel</th>
-                <th class="text-center p-3">👤 Autor</th>
+                <th class="text-center p-3">👤 Autor/en</th>
               </tr>
               </thead>
               <tbody>
                 @for (blogEntry of blogEntries; track $index) {
                   <tr class="table-row" (click)="clickEntry(blogEntry)">
                     <td class="p-3 fw-semibold text-dark">{{ blogEntry.title }}</td>
-                    <td class="text-center p-3 text-muted"></td>
+                    <td class="text-center p-3 text-muted">{{getAuthorNameString(blogEntry)}}</td>
                   </tr>
                 }
               </tbody>
