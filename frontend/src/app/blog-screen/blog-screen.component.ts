@@ -87,6 +87,9 @@ export class BlogScreenComponent implements OnInit {
   }
 
   getAuthorNameString(): string {
+    if (this.selectedBlogEntry == undefined){
+      return "";
+    }
     return this.selectedBlogEntry!.author_ids
       .map(a => a.username)
       .join(', ');
