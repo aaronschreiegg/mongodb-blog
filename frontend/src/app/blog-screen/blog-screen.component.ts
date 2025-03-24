@@ -86,6 +86,12 @@ export class BlogScreenComponent implements OnInit {
     });
   }
 
+  getAuthorNameString(): string {
+    return this.selectedBlogEntry!.author_ids
+      .map(a => a.username)
+      .join(', ');
+  }
+
   submitComment() {
     if (!this.selectedBlogEntry || !this.newComment.trim() || !this.selectedUserId) return;
 
@@ -116,7 +122,6 @@ export class BlogScreenComponent implements OnInit {
       ? comment.user_id.username
       : 'Unbekannter Nutzer';
   }
-
 
   goBack() {
     this.router.navigate(['/']);
