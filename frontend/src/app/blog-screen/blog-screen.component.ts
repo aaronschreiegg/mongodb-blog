@@ -17,7 +17,8 @@ export class BlogScreenComponent implements OnInit {
   selectedBlogEntry: BlogEntry | undefined;
   comments: Comment[] = [];
   newComment: string = '';
-  currentUser: string = 'Anonymous'; // In einer echten App würde dies aus dem Auth-Service kommen
+  users: { _id: string, username: string }[] = [];
+  selectedUserId: string = '';
 
   constructor(
     private route: ActivatedRoute, 
@@ -30,25 +31,36 @@ export class BlogScreenComponent implements OnInit {
     if (id) {
       this.loadBlogEntry(id);
       this.loadComments(id);
+      this.loadUsers();
     }
   }
 
-  loadBlogEntry(id: string) {
-    this.http.get<any>(`http://localhost:4000/blogs/${id}`).subscribe({
+  loadUsers() {
+    this.http.get<{ _id: string, username: string }[]>('http://localhost:5000/users').subscribe({
       next: (response) => {
-        if (response.status === 200 && response.data) {
-          this.selectedBlogEntry = response.data;
-        }
+        this.users = response;
       },
       error: (error) => {
-        console.error('Error loading blog entry:', error);
-        this.router.navigate(['/']);
+        console.error("Fehler beim Laden der Benutzer:", error);
       }
     });
   }
 
+  loadBlogEntry(id: string) {
+    this.http.get<BlogEntry>(`http://localhost:5000/blogs/${id}`).subscribe({
+      next: (response) => {
+        this.selectedBlogEntry = response;  
+      },
+      error: (error) => {
+        console.error("Error loading blog entry:", error);
+        this.router.navigate(['/']);
+      }
+    });
+  }
+  
+
   loadComments(blogId: string) {
-    this.http.get<any>(`http://localhost:4000/comments/${blogId}`).subscribe({
+    this.http.get<{status: number, data: Comment[]}>(`http://localhost:5000/comments/${blogId}`).subscribe({
       next: (response) => {
         if (response.status === 200 && response.data) {
           this.comments = response.data;
@@ -61,27 +73,35 @@ export class BlogScreenComponent implements OnInit {
   }
 
   submitComment() {
-    if (!this.selectedBlogEntry || !this.newComment.trim()) return;
-
+    if (!this.selectedBlogEntry || !this.newComment.trim() || !this.selectedUserId) return;
+  
     const commentData = {
       blog_entry_id: this.selectedBlogEntry._id,
-      user_id: this.currentUser,
+      user_id: this.selectedUserId,
       content_text: this.newComment.trim()
     };
-
-    this.http.post<{status: number, data: any}>('http://localhost:4000/comments', commentData).subscribe({
+  
+    this.http.post<{ status: number, data: Comment }>('http://localhost:5000/comments', commentData).subscribe({
       next: (response) => {
         if (response.status === 201) {
-          this.newComment = '';
-          this.loadComments(this.selectedBlogEntry!._id!);
+          this.comments.push(response.data);
+          this.newComment = '';  
         }
       },
       error: (error) => {
-        console.error('Error posting comment:', error);
+        console.error('Fehler beim Posten des Kommentars:', error);
         alert('Fehler beim Posten des Kommentars');
       }
     });
   }
+  
+
+  getUsername(comment: Comment): string {
+    return comment.user_id && typeof comment.user_id === 'object' && comment.user_id.username
+      ? comment.user_id.username
+      : 'Unbekannter Nutzer';
+  }
+  
 
   goBack() {
     this.router.navigate(['/']);
