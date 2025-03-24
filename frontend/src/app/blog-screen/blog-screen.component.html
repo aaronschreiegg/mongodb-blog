@@ -33,7 +33,8 @@
         </ng-container>
     </div>  
 
-    <hr class="mt-5">
+    @if(selectedBlogEntry?.commentsAllowed){
+        <hr class="mt-5">
 
     <!-- Kommentarbereich -->
     <h3 class="text-center text-primary fw-bold">💬 Kommentare</h3>
