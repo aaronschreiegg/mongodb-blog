@@ -26,6 +26,8 @@ export class BlogListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const savedView = localStorage.getItem('showCards');
+    this.showCards = savedView ? JSON.parse(savedView) : false;
     this.loadBlogEntries();  // Load blog entries when component initializes
   }
 
