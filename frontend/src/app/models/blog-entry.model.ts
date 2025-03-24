@@ -4,7 +4,7 @@ import { BlogUser } from "./author.model";
 export interface BlogEntry {
     _id?: string;
     title: string;
-    author: BlogUser[];
+    author_ids: BlogUser[];
     description: string;
     content_text: string;
     creationDate: Date;

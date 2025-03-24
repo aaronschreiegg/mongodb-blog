@@ -34,7 +34,7 @@
                 @for (blogEntry of blogEntries; track $index) {
                   <tr class="table-row" (click)="clickEntry(blogEntry)">
                     <td class="p-3 fw-semibold text-dark">{{ blogEntry.title }}</td>
-                    <td class="text-center p-3 text-muted">{{ blogEntry.author}}</td>
+                    <td class="text-center p-3 text-muted"></td>
                   </tr>
                 }
               </tbody>
@@ -52,7 +52,7 @@
             <div class="card shadow-lg h-100 border-0" (click)="clickEntry(blogEntry)">
               <div class="card-body">
                 <h5 class="card-title fw-bold text-primary">{{ blogEntry.title }}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">Autor: {{ blogEntry.author}}</h6>
+                <h6 class="card-subtitle mb-2 text-muted">Autor/s: {{ getAuthorNameString(blogEntry)}}</h6>
                 <p class="card-text text-secondary">{{ blogEntry.description }}</p>
               </div>
               <div class="card-footer bg-white text-end">

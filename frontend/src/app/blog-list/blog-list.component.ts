@@ -34,6 +34,7 @@ export class BlogListComponent implements OnInit {
   toggleView() {
     this.showCards = !this.showCards;
     localStorage.setItem('showCards', JSON.stringify(this.showCards));
+    console.log(this.blogEntries[0].author_ids.length)
   }
 
   loadBlogEntries() {
@@ -57,6 +58,13 @@ export class BlogListComponent implements OnInit {
     this.router.navigate(['/upload']);
   }
 
+  getAuthorNameString(currentEntry: BlogEntry): string {
+    return currentEntry.author_ids
+      .map(a => a.username)
+      .join(', ');
+  }
+
+
   executeQuery() {
     if (this.selectedQuery) {
       console.log("Ausgewählte Query:", this.selectedQuery);
@@ -65,7 +73,7 @@ export class BlogListComponent implements OnInit {
           this.filteredBlogEntries = this.blogEntries.filter(entry => entry.title.includes('Blog'));
           break;
         case "Query 2":
-          this.filteredBlogEntries = this.blogEntries.filter(entry => entry.author && entry.author.length > 0);
+          this.filteredBlogEntries = this.blogEntries.filter(entry => entry.author_ids && entry.author_ids.length > 0);
           break;
         case "Query 3":
           this.filteredBlogEntries = this.blogEntries.filter(entry => entry.description && entry.description.length > 10);
