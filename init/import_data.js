@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const imageDir = "/data/pics";
+const imageDir = "/init/pics";
 const imageFiles = fs.readdirSync(imageDir);
 const imagesBase64 = imageFiles.map(file =>
     fs.readFileSync(path.join(imageDir, file), { encoding: "base64" })

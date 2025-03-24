@@ -21,7 +21,7 @@ export class BlogScreenComponent implements OnInit {
   selectedUserId: string = '';
 
   constructor(
-    private route: ActivatedRoute, 
+    private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient
   ) {}
@@ -33,6 +33,8 @@ export class BlogScreenComponent implements OnInit {
       this.loadComments(id);
       this.loadUsers();
     }
+
+    console.log(this.selectedBlogEntry?.content_images)
   }
 
   loadUsers() {
@@ -49,7 +51,18 @@ export class BlogScreenComponent implements OnInit {
   loadBlogEntry(id: string) {
     this.http.get<BlogEntry>(`http://localhost:5000/blogs/${id}`).subscribe({
       next: (response) => {
-        this.selectedBlogEntry = response;  
+        // Falls nur base64 gespeichert ist, Prefix hinzufügen
+        if (response.content_images && response.content_images.length > 0) {
+          response.content_images = response.content_images.map(image => {
+            // Nur Prefix hinzufügen, wenn nicht schon vorhanden
+            if (!image.startsWith('data:image')) {
+              return `data:image/png;base64,${image}`; // oder image/jpeg je nach Format
+            }
+            return image;
+          });
+        }
+
+        this.selectedBlogEntry = response;
       },
       error: (error) => {
         console.error("Error loading blog entry:", error);
@@ -57,7 +70,8 @@ export class BlogScreenComponent implements OnInit {
       }
     });
   }
-  
+
+
 
   loadComments(blogId: string) {
     this.http.get<{status: number, data: Comment[]}>(`http://localhost:5000/comments/${blogId}`).subscribe({
@@ -74,18 +88,19 @@ export class BlogScreenComponent implements OnInit {
 
   submitComment() {
     if (!this.selectedBlogEntry || !this.newComment.trim() || !this.selectedUserId) return;
-  
+
     const commentData = {
       blog_entry_id: this.selectedBlogEntry._id,
       user_id: this.selectedUserId,
       content_text: this.newComment.trim()
     };
-  
+
     this.http.post<{ status: number, data: Comment }>('http://localhost:5000/comments', commentData).subscribe({
       next: (response) => {
         if (response.status === 201) {
           this.comments.push(response.data);
-          this.newComment = '';  
+          this.newComment = '';
+          this.loadComments(this.selectedBlogEntry?._id!);
         }
       },
       error: (error) => {
@@ -94,14 +109,14 @@ export class BlogScreenComponent implements OnInit {
       }
     });
   }
-  
+
 
   getUsername(comment: Comment): string {
     return comment.user_id && typeof comment.user_id === 'object' && comment.user_id.username
       ? comment.user_id.username
       : 'Unbekannter Nutzer';
   }
-  
+
 
   goBack() {
     this.router.navigate(['/']);
