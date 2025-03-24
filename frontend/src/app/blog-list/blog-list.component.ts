@@ -14,6 +14,7 @@ import { BlogEntry } from '../models/blog-entry.model';
 })
 export class BlogListComponent implements OnInit {
   showSidebar = false;
+  showCards = false;
   selectedQuery: string = '';
   blogEntries: BlogEntry[] = [];
   filteredBlogEntries: BlogEntry[] = [];
@@ -26,6 +27,11 @@ export class BlogListComponent implements OnInit {
 
   ngOnInit() {
     this.loadBlogEntries();  // Load blog entries when component initializes
+  }
+
+  toggleView() {
+    this.showCards = !this.showCards;
+    localStorage.setItem('showCards', JSON.stringify(this.showCards));
   }
 
   loadBlogEntries() {

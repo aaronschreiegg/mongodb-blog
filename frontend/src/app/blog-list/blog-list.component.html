@@ -1,4 +1,5 @@
 <div class="main-container" [class.show-sidebar]="showSidebar">
+
   <!-- Sidebar -->
   <div class="sidebar" (mouseenter)="showSidebar = true" (mouseleave)="showSidebar = false">
     <div class="sidebar-content" [class.show]="showSidebar">
@@ -10,38 +11,62 @@
     </div>
   </div>
 
-  <!-- Blog-Inhalte (Tabelle) -->
+  <!-- Blog-Inhalte -->
   <div class="container mt-4 content">
-    <h2 class="text-center fw-bold text-primary">📖 Blog Einträge</h2>
+    <div class="row">
+      <h2 class="col-12 text-center fw-bold text-primary" style="cursor: pointer;" (click)="toggleView()">📖 Blog Einträge</h2>
+    </div>
     <hr class="mb-4">
-    <div class="row justify-content-center">
-      <div class="col-md-10">
-        <div class="blog-entry-table table-responsive shadow-lg rounded">
-          <table class="table table-hover align-middle bg-white">
-            <thead class="bg-primary text-white">
+
+    <!-- Listenansicht -->
+    <div *ngIf="!showCards">
+      <div class="row justify-content-center">
+        <div class="col-md-10">
+          <div class="blog-entry-table table-responsive shadow-lg rounded">
+            <table class="table table-hover align-middle bg-white">
+              <thead class="bg-primary text-white">
               <tr>
                 <th class="p-3">📌 Titel</th>
                 <th class="text-center p-3">👤 Autor</th>
               </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let blogEntry of getFilteredEntries()" class="table-row" (click)="clickEntry(blogEntry)">
-                <td class="p-3 fw-semibold text-dark">{{ blogEntry.title }}</td>
-                <td class="text-center p-3 text-muted">
-                  <span *ngFor="let author of blogEntry.author; let last = last">
-                    {{ author.username }}<span *ngIf="!last">, </span>
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                @for (blogEntry of blogEntries; track $index) {
+                  <tr class="table-row" (click)="clickEntry(blogEntry)">
+                    <td class="p-3 fw-semibold text-dark">{{ blogEntry.title }}</td>
+                    <td class="text-center p-3 text-muted">{{ blogEntry.author}}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Kartenansicht -->
+    <div *ngIf="showCards">
+      <div class="row row-cols-1 row-cols-md-3 g-4" style="margin-bottom: 100px;">
+        @for (blogEntry of blogEntries; track $index) {
+          <div class="col">
+            <div class="card shadow-lg h-100 border-0" (click)="clickEntry(blogEntry)">
+              <div class="card-body">
+                <h5 class="card-title fw-bold text-primary">{{ blogEntry.title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Autor: {{ blogEntry.author}}</h6>
+                <p class="card-text text-secondary">{{ blogEntry.description }}</p>
+              </div>
+              <div class="card-footer bg-white text-end">
+                <button class="btn btn-outline-primary btn-sm">Details</button>
+              </div>
+            </div>
+          </div>
+        }
       </div>
     </div>
   </div>
 </div>
 
-<!-- Neuer Blogeintrag-Button bleibt unten -->
+<!-- Neuer Blogeintrag-Button -->
 <div class="row text-center position-fixed bottom-0 start-50 translate-middle-x mb-4">
   <button class="btn btn-primary col me-5" (click)="goToUpload()">✍🏻 Neuer Blogeintrag</button>
 </div>
