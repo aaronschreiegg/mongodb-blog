@@ -61,5 +61,19 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+router.put('/impression/:id', async (req, res) => {
+  try {
+    const blog = await Blog.findByIdAndUpdate(
+        req.params.id,
+        { $inc: { impressionCount: 1 } },
+        { new: true }
+    );
+    res.json(blog);
+  } catch (err) {
+    console.error('Fehler beim Hochzählen der Impression:', err);
+    res.status(500).json({ message: 'Fehler beim Hochzählen' });
+  }
+});
+
 
 module.exports = router;

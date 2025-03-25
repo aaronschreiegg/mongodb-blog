@@ -28,6 +28,7 @@
               <tr>
                 <th class="p-3">📌 Titel</th>
                 <th class="text-center p-3">👤 Autor/en</th>
+                <th class="text-center p-3">👁️ Aufrufe</th>
                 <th></th>
               </tr>
               </thead>
@@ -36,6 +37,7 @@
                   <tr class="table-row" (click)="clickEntry(blogEntry)">
                     <td class="p-3 fw-semibold text-dark">{{ blogEntry.title }}</td>
                     <td class="text-center p-3 text-muted">{{getAuthorNameString(blogEntry)}}</td>
+                    <td class="text-center p-3 text-muted">{{ blogEntry.impressionCount }}</td> <!-- NEU -->
                     <td class="text-end p-3">
                       <!-- ✏️ Bearbeiten -->
                       <button class="btn btn-outline-secondary btn-sm me-2"
@@ -67,10 +69,14 @@
                 <h5 class="card-title fw-bold text-primary">{{ blogEntry.title }}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">Autor/s: {{ getAuthorNameString(blogEntry)}}</h6>
                 <p class="card-text text-secondary">{{ blogEntry.description }}</p>
+                <p class="card-text">👁️ Aufrufe: {{blogEntry.impressionCount}}</p>
               </div>
               <div class="card-footer bg-white text-end">
-                <button class="btn btn-outline-primary btn-sm">Details</button>
+                <button class="btn btn-outline-primary btn-sm col-3 me-2">Details</button>
+                <button (click)="editBlogEntry(blogEntry); $event.stopPropagation()" class="btn btn-outline-secondary btn-sm col-3 me-2">Edit</button>
+                <button (click)="deleteBlogEntry(blogEntry); $event.stopPropagation()" class="btn btn-outline-danger btn-sm col-3">Löschen</button>
               </div>
+
             </div>
           </div>
         }

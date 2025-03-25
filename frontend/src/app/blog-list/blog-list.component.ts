@@ -71,7 +71,16 @@ export class BlogListComponent implements OnInit {
   }
 
   clickEntry(blogEntry: BlogEntry) {
-    this.router.navigate(['/blog', blogEntry._id]);
+    this.http.put(`http://localhost:5000/blogs/impression/${blogEntry._id}`, {}).subscribe({
+      next: () => {
+        this.router.navigate(['/blog', blogEntry._id]);
+      },
+      error: (err) => {
+        console.error("Fehler beim Hochzählen der Impression:", err);
+        // Optional trotzdem navigieren:
+        this.router.navigate(['/blog', blogEntry._id]);
+      }
+    });
   }
 
   goToUpload() {
