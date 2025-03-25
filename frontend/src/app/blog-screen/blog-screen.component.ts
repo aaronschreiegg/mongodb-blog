@@ -71,9 +71,8 @@ export class BlogScreenComponent implements OnInit {
     });
   }
 
-
-
   loadComments(blogId: string) {
+    console.log(blogId);
     this.http.get<{status: number, data: Comment[]}>(`http://localhost:5000/comments/${blogId}`).subscribe({
       next: (response) => {
         if (response.status === 200 && response.data) {

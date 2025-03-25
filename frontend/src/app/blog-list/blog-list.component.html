@@ -28,6 +28,7 @@
               <tr>
                 <th class="p-3">📌 Titel</th>
                 <th class="text-center p-3">👤 Autor/en</th>
+                <th></th>
               </tr>
               </thead>
               <tbody>
@@ -35,6 +36,18 @@
                   <tr class="table-row" (click)="clickEntry(blogEntry)">
                     <td class="p-3 fw-semibold text-dark">{{ blogEntry.title }}</td>
                     <td class="text-center p-3 text-muted">{{getAuthorNameString(blogEntry)}}</td>
+                    <td class="text-end p-3">
+                      <!-- ✏️ Bearbeiten -->
+                      <button class="btn btn-outline-secondary btn-sm me-2"
+                              (click)="editBlogEntry(blogEntry); $event.stopPropagation()">
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+
+                      <!-- 🗑️ Löschen -->
+                      <button class="btn btn-outline-danger btn-sm"
+                              (click)="deleteBlogEntry(blogEntry); $event.stopPropagation()">
+                        <i class="bi bi-trash"></i>
+                      </button>
                   </tr>
                 }
               </tbody>

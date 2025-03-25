@@ -50,6 +50,26 @@ export class BlogListComponent implements OnInit {
     });
   }
 
+  deleteBlogEntry(entry: BlogEntry) {
+    if (!confirm(`Möchtest du den Blogeintrag "${entry.title}" wirklich löschen?`)) return;
+
+    this.http.delete(`http://localhost:5000/blogs/${entry._id}`).subscribe({
+      next: () => {
+        this.blogEntries = this.blogEntries.filter(b => b._id !== entry._id);
+        this.filteredBlogEntries = this.filteredBlogEntries.filter(b => b._id !== entry._id);
+        alert("Blogeintrag wurde gelöscht.");
+      },
+      error: (err) => {
+        console.error("Fehler beim Löschen:", err);
+        alert("Fehler beim Löschen.");
+      }
+    });
+  }
+
+  editBlogEntry(entry: BlogEntry) {
+    this.router.navigate(['/upload', entry._id]);
+  }
+
   clickEntry(blogEntry: BlogEntry) {
     this.router.navigate(['/blog', blogEntry._id]);
   }

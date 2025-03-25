@@ -9,4 +9,7 @@ export const routes: Routes = [
         { path: '', component: BlogListComponent },
         { path: 'blog/:id', component: BlogScreenComponent },
         { path: 'upload', component: BlogEntryComponent },
+        { path: 'upload', component: BlogEntryComponent },
+        { path: 'upload/:id', component: BlogEntryComponent }, // für Edit
+
 ];

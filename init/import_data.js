@@ -40,10 +40,6 @@ const blogEntries = [
         commentsAllowed: true,
         content_text: "MongoDB is a NoSQL database...",
         content_images: [imagesBase64[0]],
-        recentComments: [
-            { user_id: userIds[1], content_text: "Great article!", date: new Date(2025, 2, 5) },
-            { user_id: userIds[2], content_text: "Very helpful, thanks!", date: new Date(2024, 2, 5) }
-        ]
     },
     {
         title: "Best Travel Destinations",
