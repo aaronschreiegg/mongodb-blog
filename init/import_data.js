@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { ObjectId } = require("mongodb");
 
-const imageDir = "/init/pics";
+const imageDir = "/data/pics"; // Ändere dies von /init/pics zu /data/pics
 const imageFiles = fs.readdirSync(imageDir);
 const imagesBase64 = imageFiles.map(file =>
     fs.readFileSync(path.join(imageDir, file), { encoding: "base64" })
@@ -29,6 +29,9 @@ const categories = [
 ];
 db.BlogCategory.insertMany(categories);
 
+// Abrufen der Kategorie-IDs
+const categoryIds = db.BlogCategory.find().toArray().map(category => category._id);
+
 const blogEntries = [
     {
         title: "MongoDB Basics",
@@ -40,6 +43,11 @@ const blogEntries = [
         commentsAllowed: true,
         content_text: "MongoDB is a NoSQL database...",
         content_images: [imagesBase64[0]],
+        category_ids: [categoryIds[0]], // Technology
+        recentComments: [
+            { user_id: userIds[1], content_text: "Great article!", date: new Date(2025, 2, 5) },
+            { user_id: userIds[2], content_text: "Very helpful, thanks!", date: new Date(2024, 2, 5) }
+        ]
     },
     {
         title: "Best Travel Destinations",
@@ -50,7 +58,8 @@ const blogEntries = [
         impressionCount: 25,
         commentsAllowed: true,
         content_text: "If you're planning your next vacation...",
-        content_images: [imagesBase64[1]],
+        content_images: [imagesBase64[1], imagesBase64[2]],
+        category_ids: [categoryIds[1]], // Travel
         recentComments: [
             { user_id: userIds[0], content_text: "I want to visit these places!", date: new Date(2023, 2, 5) },
             { user_id: userIds[3], content_text: "Nice recommendations!", date: new Date(2022, 2, 5) }
@@ -65,7 +74,8 @@ const blogEntries = [
         impressionCount: 5,
         commentsAllowed: false,
         content_text: "Cooking is an art...",
-        content_images: [imagesBase64[3], imagesBase64[4]],
+        content_images: [imagesBase64[3]],
+        category_ids: [categoryIds[2]], // Food
         recentComments: [
             { user_id: userIds[4], content_text: "I love these recipes!", date: new Date(2021, 2, 5) }
         ]
