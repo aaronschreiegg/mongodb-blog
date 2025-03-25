@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { ObjectId } = require("mongodb");
 
 const imageDir = "/init/pics";
 const imageFiles = fs.readdirSync(imageDir);
@@ -21,15 +22,12 @@ db.BlogUser.insertMany(users);
 
 const userIds = db.BlogUser.find().toArray().map(user => user._id);
 
-
-
 const categories = [
     { name: "Technology" },
     { name: "Travel" },
     { name: "Food" }
 ];
 db.BlogCategory.insertMany(categories);
-
 
 const blogEntries = [
     {
@@ -42,6 +40,10 @@ const blogEntries = [
         commentsAllowed: true,
         content_text: "MongoDB is a NoSQL database...",
         content_images: [imagesBase64[0]],
+        recentComments: [
+            { user_id: userIds[1], content_text: "Great article!", date: new Date(2025, 2, 5) },
+            { user_id: userIds[2], content_text: "Very helpful, thanks!", date: new Date(2024, 2, 5) }
+        ]
     },
     {
         title: "Best Travel Destinations",
@@ -53,6 +55,10 @@ const blogEntries = [
         commentsAllowed: true,
         content_text: "If you're planning your next vacation...",
         content_images: [imagesBase64[1]],
+        recentComments: [
+            { user_id: userIds[0], content_text: "I want to visit these places!", date: new Date(2023, 2, 5) },
+            { user_id: userIds[3], content_text: "Nice recommendations!", date: new Date(2022, 2, 5) }
+        ]
     },
     {
         title: "Delicious Recipes",
@@ -64,16 +70,24 @@ const blogEntries = [
         commentsAllowed: false,
         content_text: "Cooking is an art...",
         content_images: [imagesBase64[3], imagesBase64[4]],
+        recentComments: [
+            { user_id: userIds[4], content_text: "I love these recipes!", date: new Date(2021, 2, 5) }
+        ]
     }
 ];
 db.BlogEntry.insertMany(blogEntries);
 
-const blogIds = db.BlogUser.find().toArray().map(blog => blog._id);
+const blogIds = db.BlogEntry.find().toArray().map(blog => blog._id);
 
 const comments = [
-    { blog_entry_id: blogIds[0], user_id: userIds[1], content_text: "Great article!" },
-    { blog_entry_id: blogIds[0], user_id: userIds[2], content_text: "Very helpful, thanks!" },
-    { log_entry_id: blogIds[1], user_id: userIds[0], content_text: "I want to visit these places!" },
-    { blog_entry_id: blogIds[1], user_id: userIds[3], content_text: "Nice recommendations!" }
+    { blog_entry_id: ObjectId(blogIds[0]), user_id: userIds[1], content_text: "Great article!", date: new Date(2025, 2, 5) },
+    { blog_entry_id: ObjectId(blogIds[0]), user_id: userIds[2], content_text: "Very helpful, thanks!", date: new Date(2024, 2, 5) },
+    { blog_entry_id: ObjectId(blogIds[1]), user_id: userIds[0], content_text: "I want to visit these places!", date: new Date(2023, 2, 5) },
+    { blog_entry_id: ObjectId(blogIds[1]), user_id: userIds[3], content_text: "Nice recommendations!", date: new Date(2022, 2, 5) },
+    { blog_entry_id: ObjectId(blogIds[2]), user_id: userIds[4], content_text: "I love these recipes!", date: new Date(2021, 2, 5) }
 ];
 db.Comment.insertMany(comments);
+
+
+
+
