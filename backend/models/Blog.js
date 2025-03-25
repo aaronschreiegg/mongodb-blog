@@ -12,5 +12,4 @@ const BlogSchema = new mongoose.Schema({
     content_images: { type: [String], default: [] },  // Falls undefined, setze leeres Array
 });
 
-
-  module.exports = mongoose.model("Blog", BlogSchema, "BlogEntry");
+module.exports = mongoose.model("Blog", BlogSchema, "BlogEntry");

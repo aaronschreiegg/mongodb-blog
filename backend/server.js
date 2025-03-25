@@ -11,8 +11,8 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE"], // Erlaube bestimmte HTTP-Methoden
     allowedHeaders: ["Content-Type", "Authorization"] // Erlaube bestimmte Header
 }));
-app.use(express.json({ limit: '10mb' })); // oder mehr, z. B. '20mb'
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '20mb' })); // oder mehr, z. B. '20mb'
+app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 // Middleware für JSON-Datenverarbeitung
 
 // MongoDB-Verbindung

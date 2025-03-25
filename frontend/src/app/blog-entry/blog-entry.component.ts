@@ -58,6 +58,7 @@ export class BlogEntryComponent implements OnInit {
       if (blogId) {
         this.loadBlogEntry(blogId);
       }
+
     }
 
   loadBlogEntry(id: string) {
@@ -75,10 +76,9 @@ export class BlogEntryComponent implements OnInit {
           images: (data.content_images || []).map((img: string) => {
             return img.startsWith('data:image') ? img : `data:image/jpeg;base64,${img}`;
           }),
-          category: this.categories.find(
-            cat => cat._id === this.blog.category
-          )?.name!
+          category: "test"
         };
+        console.log(data, 2000)
       },
       error: (err) => {
         console.error("Fehler beim Laden des Blogeintrags:", err);
