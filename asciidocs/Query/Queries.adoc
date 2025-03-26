@@ -1,5 +1,7 @@
 = MongoDB Queries für Blog-System
 
+== Queries
+
 === 1. Alle Blog-User, bei denen der Benutzername und das Passwort übereinstimmen
 [source,js]
 ----
@@ -115,3 +117,101 @@ db.comments.find({ "blogAuthor": "timon" }).sort({ creationDate: -1 }).limit(2);
 Ps: Keine Kommentare bei dem Author Timon
 
 image::Query_pics/ZweiNeuesteKommentareZuEinemBlogEntry.png[]
+
+== Index&Changes
+
+=== 1. Add a existing Author to a BlogEntry
+[source,js]
+----
+db.BlogEntry.updateOne(
+  { _id: ObjectId("67e1ba9e781ed6570251e94c") },
+  { $addToSet: { author_ids: ObjectId("67e1ba9e781ed6570251e947") } }
+);
+----
+
+image::./../IndexAndChanges/pics/addOrChangeAuthor.png[]
+
+=== 2. Add a aditional Field to a BlogEntry
+[source,js]
+----
+db.BlogEntry.updateOne(
+  {},
+  { $set: { hashtag: "#mongodb" } },
+  { sort: { creationDate: -1 } }
+);
+----
+
+image::./../IndexAndChanges/pics/extendWithNewField.png[]  
+
+=== 3. Change name of BlogCategory
+[source,js]
+----
+db.BlogCategory.updateOne(
+  { name: "Food" },
+  { $set: { name: "Food & Drinks" } }
+);
+----
+
+image::./../IndexAndChanges/pics/ChangeCategory.png[]
+
+=== 4. Add a new BlogEntry if not exists otherwise edit
+[source,js]
+----
+db.BlogEntry.updateOne(
+  {
+    title: "MongoDB Basics",
+    author_ids: [
+      ObjectId("67e1ba9e781ed6570251e944"), // Beispiel-Autor 1
+      ObjectId("67e1ba9e781ed6570251e945")  // Beispiel-Autor 2
+    ]
+  },
+  {
+    $set: {
+      description: "An introduction to MongoDB.",
+      creationDate: new Date("2025-02-14"),
+      editDates: [
+        new Date("2025-02-15"),
+        new Date("2025-02-16"),
+        new Date("2025-02-17"),
+        new Date("2025-02-18")
+      ],
+      impressionCount: 22,
+      commentsAllowed: true,
+      content_text: "MongoDB is a NoSQL database...\nEdit 1\nEdit 2",
+      content_images: []
+    }
+  },
+  { upsert: true }
+);
+----
+
+image::./../IndexAndChanges/pics/newBlogEntryIfNotExists.png[]
+
+=== 5. Delete BlogEntry and its Comments
+[source,js]
+----
+db.BlogEntry.deleteOne({ _id: ObjectId("67e1ba9e781ed6570251e94c") });
+db.Comment.deleteMany({ blog_entry_id: ObjectId("67e1ba9e781ed6570251e94c") });
+----
+
+image::./../IndexAndChanges/pics/DeleteBlogEntryAndItsCommand.png[]
+
+=== 1. Only unique Usernames
+[source,js]
+----
+db.BlogUser.createIndex({ username: 1 }, { unique: true });
+----
+
+image::./../IndexAndChanges/pics/CreateIndexForUsername.png[]
+
+=== 2. Only unique BlogEntry-Titles and Usernames combined on blogEntry
+[source,js]
+----
+db.BlogEntry.createIndex({ title: 1, author_ids: 1 }, { unique: true });
+----
+
+image::./../IndexAndChanges/pics/CreateIndexForTitleAndAuthor.png[]
+
+== Gitub-Repository
+
+link:https://github.com/aaronschreiegg/mongodb-blog[mongodb-blog]
