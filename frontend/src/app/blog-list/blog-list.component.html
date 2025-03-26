@@ -3,11 +3,19 @@
   <!-- Sidebar -->
   <div class="sidebar" (mouseenter)="showSidebar = true" (mouseleave)="showSidebar = false">
     <div class="sidebar-content" [class.show]="showSidebar">
-      <label for="querySelect">🔍 Query auswählen:</label>
+      <label for="querySelect">🔍 MongoDB Query:</label>
       <select id="querySelect" class="form-select" [(ngModel)]="selectedQuery">
+        <option value="">-- Query auswählen --</option>
         <option *ngFor="let query of queries" [value]="query">{{ query }}</option>
       </select>
       <button class="btn btn-primary mt-3" (click)="executeQuery()">Ausführen</button>
+      
+      <hr class="my-4">
+      
+      <h6 class="text-primary">Verwaltung</h6>
+      <button class="btn btn-outline-secondary mt-2 w-100" (click)="navigateToCategories()">
+        🏷️ Kategorien verwalten
+      </button>
     </div>
   </div>
 
@@ -18,8 +26,22 @@
     </div>
     <hr class="mb-4">
 
+    <!-- Query-Information -->
+    <div *ngIf="selectedQuery" class="alert alert-info mb-4">
+      <strong>Aktive Query:</strong> {{ selectedQuery }}
+      <button type="button" class="btn-close float-end" (click)="selectedQuery = ''; executeQuery()"></button>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="text-center my-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Wird geladen...</span>
+      </div>
+      <p class="mt-2">Daten werden verarbeitet...</p>
+    </div>
+
     <!-- Listenansicht -->
-    <div *ngIf="!showCards">
+    <div *ngIf="!showCards && !isLoading">
       <div class="row justify-content-center">
         <div class="col-md-10">
           <div class="blog-entry-table table-responsive shadow-lg rounded">
@@ -28,16 +50,18 @@
               <tr>
                 <th class="p-3">📌 Titel</th>
                 <th class="text-center p-3">👤 Autor/en</th>
+                <th class="text-center p-3">📅 Erstellt am</th>
                 <th class="text-center p-3">👁️ Aufrufe</th>
                 <th></th>
               </tr>
               </thead>
               <tbody>
-                @for (blogEntry of blogEntries; track $index) {
+                @for (blogEntry of getFilteredEntries(); track $index) {
                   <tr class="table-row" (click)="clickEntry(blogEntry)">
                     <td class="p-3 fw-semibold text-dark">{{ blogEntry.title }}</td>
                     <td class="text-center p-3 text-muted">{{getAuthorNameString(blogEntry)}}</td>
-                    <td class="text-center p-3 text-muted">{{ blogEntry.impressionCount }}</td> <!-- NEU -->
+                    <td class="text-center p-3 text-muted">{{ blogEntry.creationDate | date:'dd.MM.yyyy' }}</td>
+                    <td class="text-center p-3 text-muted">{{ blogEntry.impressionCount }}</td>
                     <td class="text-end p-3">
                       <!-- ✏️ Bearbeiten -->
                       <button class="btn btn-outline-secondary btn-sm me-2"
@@ -52,6 +76,13 @@
                       </button>
                   </tr>
                 }
+                <!-- No Results -->
+                <tr *ngIf="getFilteredEntries().length === 0">
+                  <td colspan="5" class="text-center py-5">
+                    <p class="text-muted">Keine Ergebnisse für die ausgewählte Query gefunden.</p>
+                    <button class="btn btn-outline-primary btn-sm" (click)="selectedQuery = ''; executeQuery()">Alle anzeigen</button>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -60,15 +91,18 @@
     </div>
 
     <!-- Kartenansicht -->
-    <div *ngIf="showCards">
+    <div *ngIf="showCards && !isLoading">
       <div class="row row-cols-1 row-cols-md-3 g-4" style="margin-bottom: 100px;">
-        @for (blogEntry of blogEntries; track $index) {
+        @for (blogEntry of getFilteredEntries(); track $index) {
           <div class="col">
             <div class="card shadow-lg h-100 border-0" (click)="clickEntry(blogEntry)">
               <div class="card-body">
                 <h5 class="card-title fw-bold text-primary">{{ blogEntry.title }}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">Autor/s: {{ getAuthorNameString(blogEntry)}}</h6>
                 <p class="card-text text-secondary">{{ blogEntry.description }}</p>
+                <p class="card-text">
+                  <small class="text-muted">📅 Erstellt: {{ blogEntry.creationDate | date:'dd.MM.yyyy' }}</small>
+                </p>
                 <p class="card-text">👁️ Aufrufe: {{blogEntry.impressionCount}}</p>
               </div>
               <div class="card-footer bg-white text-end">
@@ -76,10 +110,19 @@
                 <button (click)="editBlogEntry(blogEntry); $event.stopPropagation()" class="btn btn-outline-secondary btn-sm col-3 me-2">Edit</button>
                 <button (click)="deleteBlogEntry(blogEntry); $event.stopPropagation()" class="btn btn-outline-danger btn-sm col-3">Löschen</button>
               </div>
-
             </div>
           </div>
         }
+
+        <!-- No Results Card -->
+        <div *ngIf="getFilteredEntries().length === 0" class="col-12 my-5 text-center">
+          <div class="card shadow-lg border-0 p-5">
+            <div class="card-body">
+              <h5 class="text-muted mb-4">Keine Ergebnisse für die ausgewählte Query gefunden.</h5>
+              <button class="btn btn-outline-primary" (click)="selectedQuery = ''; executeQuery()">Alle anzeigen</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

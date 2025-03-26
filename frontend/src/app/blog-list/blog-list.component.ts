@@ -18,7 +18,17 @@ export class BlogListComponent implements OnInit {
   selectedQuery: string = '';
   blogEntries: BlogEntry[] = [];
   filteredBlogEntries: BlogEntry[] = [];
-  queries = ["Query 1", "Query 2", "Query 3", "Query 4", "Query 5"];
+  queries = [
+    "Alle Blog-Einträge",
+    "Neueste zuerst", 
+    "Älteste zuerst",
+    "Mehr als 0 Aufrufe",
+    "Mit Bildern", 
+    "Sortiert nach Titel",
+    "Ohne Beschreibung",
+    "Neueste 2 Einträge"
+  ];
+  isLoading = false;
 
   constructor(
     private router: Router,
@@ -34,18 +44,20 @@ export class BlogListComponent implements OnInit {
   toggleView() {
     this.showCards = !this.showCards;
     localStorage.setItem('showCards', JSON.stringify(this.showCards));
-    console.log(this.blogEntries[0].author_ids.length)
   }
 
   loadBlogEntries() {
+    this.isLoading = true;
     this.http.get<BlogEntry[]>('http://localhost:5000/blogs').subscribe({
       next: (response) => {
         console.log('Loaded entries:', response);
         this.blogEntries = response;
         this.filteredBlogEntries = response;
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading entries:', error);
+        this.isLoading = false;
       }
     });
   }
@@ -87,36 +99,89 @@ export class BlogListComponent implements OnInit {
     this.router.navigate(['/upload']);
   }
 
+  navigateToCategories() {
+    this.router.navigate(['/categories']);
+  }
+
   getAuthorNameString(currentEntry: BlogEntry): string {
     return currentEntry.author_ids
       .map(a => a.username)
       .join(', ');
   }
 
-
   executeQuery() {
-    if (this.selectedQuery) {
-      console.log("Ausgewählte Query:", this.selectedQuery);
-      switch (this.selectedQuery) {
-        case "Query 1":
-          this.filteredBlogEntries = this.blogEntries.filter(entry => entry.title.includes('Blog'));
-          break;
-        case "Query 2":
-          this.filteredBlogEntries = this.blogEntries.filter(entry => entry.author_ids && entry.author_ids.length > 0);
-          break;
-        case "Query 3":
-          this.filteredBlogEntries = this.blogEntries.filter(entry => entry.description && entry.description.length > 10);
-          break;
-        case "Query 4":
-          this.filteredBlogEntries = [...this.blogEntries].sort((a, b) => a.title.localeCompare(b.title));
-          break;
-        case "Query 5":
-          this.filteredBlogEntries = this.blogEntries.slice(0, 5);
-          break;
-        default:
-          this.filteredBlogEntries = this.blogEntries;
-          break;
-      }
+    if (!this.selectedQuery) {
+      this.filteredBlogEntries = this.blogEntries;
+      return;
+    }
+
+    this.isLoading = true;
+    
+    // Für einige Queries können wir clientseitige Filter verwenden
+    switch (this.selectedQuery) {
+      case "Alle Blog-Einträge":
+        this.filteredBlogEntries = this.blogEntries;
+        this.isLoading = false;
+        break;
+        
+      case "Neueste zuerst":
+        // Sortiert nach Erstellungsdatum absteigend (neueste zuerst)
+        this.filteredBlogEntries = [...this.blogEntries].sort((a, b) => 
+          new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime()
+        );
+        this.isLoading = false;
+        break;
+        
+      case "Älteste zuerst":
+        // Sortiert nach Erstellungsdatum aufsteigend (älteste zuerst)
+        this.filteredBlogEntries = [...this.blogEntries].sort((a, b) => 
+          new Date(a.creationDate).getTime() - new Date(b.creationDate).getTime()
+        );
+        this.isLoading = false;
+        break;
+
+      case "Mehr als 0 Aufrufe":
+        // Filtert Einträge mit Impressions > 0
+        this.filteredBlogEntries = this.blogEntries.filter(entry => entry.impressionCount > 0);
+        this.isLoading = false;
+        break;
+        
+      case "Mit Bildern":
+        // Filtert Einträge, die Bilder enthalten
+        this.filteredBlogEntries = this.blogEntries.filter(entry => 
+          entry.content_images && entry.content_images.length > 0
+        );
+        this.isLoading = false;
+        break;
+        
+      case "Sortiert nach Titel":
+        // Sortiert alphabetisch nach Titel
+        this.filteredBlogEntries = [...this.blogEntries].sort((a, b) => 
+          a.title.localeCompare(b.title)
+        );
+        this.isLoading = false;
+        break;
+        
+      case "Ohne Beschreibung":
+        // Filtert Einträge ohne Beschreibung
+        this.filteredBlogEntries = this.blogEntries.filter(entry => 
+          !entry.description || entry.description.trim() === ""
+        );
+        this.isLoading = false;
+        break;
+        
+      case "Neueste 2 Einträge":
+        // Holt die neuesten 2 Blog-Einträge
+        this.filteredBlogEntries = [...this.blogEntries]
+          .sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())
+          .slice(0, 2);
+        this.isLoading = false;
+        break;
+        
+      default:
+        this.filteredBlogEntries = this.blogEntries;
+        this.isLoading = false;
+        break;
     }
   }
 

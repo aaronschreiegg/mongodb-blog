@@ -1,4 +1,5 @@
 const Blog = require("../models/Blog");
+const Comment = require("../models/Comment");
 const express = require('express');
 
 const router = express.Router();
@@ -21,11 +22,22 @@ router.get("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
+    const blogId = req.params.id;
+    
+    // Zuerst alle zugehörigen Kommentare löschen
+    await Comment.deleteMany({ blog_entry_id: blogId });
+    
+    // Dann den Blogeintrag löschen
+    const deletedBlog = await Blog.findByIdAndDelete(blogId);
+    
     if (!deletedBlog) {
       return res.status(404).json({ message: "Blog nicht gefunden" });
     }
-    res.status(200).json({ message: "Blog gelöscht", deletedBlog });
+    
+    res.status(200).json({ 
+      message: "Blog und zugehörige Kommentare wurden gelöscht", 
+      deletedBlog 
+    });
   } catch (error) {
     console.error("Fehler beim Löschen:", error);
     res.status(500).json({ message: "Interner Serverfehler" });

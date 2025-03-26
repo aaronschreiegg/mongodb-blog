@@ -43,7 +43,7 @@
     left: 0;
     height: 100%;
     width: 5px;
-    background: transparent;
+    background: linear-gradient(to bottom, #0d6efd, #0dcaf0);
     transition: width 0.3s ease-in-out;
     z-index: 1000;
 }
@@ -58,6 +58,33 @@
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
     padding: 25px;
     transition: left 0.4s ease-in-out; 
+    
+    label {
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #0d6efd;
+    }
+    
+    select {
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        border-color: #e0e0e0;
+        
+        &:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+    }
+    
+    button {
+        width: 100%;
+        transition: all 0.3s;
+        
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    }
 }
 
 .sidebar-content.show {
@@ -72,4 +99,41 @@
 
 .show-sidebar .content {
     transform: translateX(130px); 
+}
+
+.alert-info {
+    background-color: rgba(13, 202, 240, 0.1);
+    border-color: rgba(13, 202, 240, 0.2);
+    color: #0dcaf0;
+    
+    strong {
+        color: #0d6efd;
+    }
+    
+    .btn-close {
+        font-size: 0.8rem;
+        opacity: 0.5;
+        transition: opacity 0.3s;
+        
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+// Anpassungen für den Ladeindikator
+.spinner-border {
+    color: #0d6efd;
+    width: 3rem;
+    height: 3rem;
+}
+
+// Styling für "Keine Ergebnisse" Meldungen
+.card {
+    transition: all 0.3s;
+    
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
 }
