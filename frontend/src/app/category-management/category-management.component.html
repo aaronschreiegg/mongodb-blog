@@ -67,7 +67,7 @@
 
           <!-- Edit mode -->
           <div *ngIf="editingCategory?._id === category._id" class="d-flex justify-content-between w-100">
-            <input type="text" class="form-control me-2" [(ngModel)]="editingCategory">
+            <input type="text" class="form-control me-2" [(ngModel)]="editingCategoryName">
             <div>
               <button class="btn btn-sm btn-success me-2" (click)="updateCategory()">
                 <i class="bi bi-check"></i> Speichern

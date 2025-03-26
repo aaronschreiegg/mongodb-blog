@@ -16,6 +16,7 @@ export class CategoryManagementComponent implements OnInit {
   categories: Category[] = [];
   newCategoryName: string = '';
   editingCategory: Category | null = null;
+  editingCategoryName: string = "";
   isLoading = false;
   errorMessage = '';
 
@@ -66,6 +67,7 @@ export class CategoryManagementComponent implements OnInit {
   }
 
   startEditing(category: Category) {
+    this.editingCategoryName = category.name;
     this.editingCategory = { ...category };
   }
 
@@ -79,6 +81,8 @@ export class CategoryManagementComponent implements OnInit {
       this.errorMessage = 'Der Kategoriename darf nicht leer sein';
       return;
     }
+
+    this.editingCategory.name = this.editingCategoryName;
 
     this.isLoading = true;
     this.http.put<Category>(
