@@ -46,3 +46,10 @@ Häufig genutzte Daten wie Kommentare, Bilder oder Bearbeitungsdaten sind direkt
 - Simon
 - Leopold
 - Emil
+
+## Verwendete Technologien
+
+- **MongoDB** - Database
+- **Angular** – Frontend
+- **Javascript** - Backend
+- **Docker** 
